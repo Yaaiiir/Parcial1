@@ -1,5 +1,4 @@
-# Nombre del Proyecto
-
+# Examen de la primera parcial
 ¡Bienvenidos! Este es un espacio de trabajo colaborativo.
 
 ## 🚀 Cómo contribuir
