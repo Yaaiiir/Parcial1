@@ -17,7 +17,6 @@ const pool = new Pool({
 
 /**
  * API 1: Obtener el catálogo general de temas
- * Llena la cuadrícula principal de la aplicación.
  */
 app.get('/api/ejercicios', async (req, res) => {
   try {
@@ -31,14 +30,10 @@ app.get('/api/ejercicios', async (req, res) => {
 
 /**
  * API 2: Obtener retos detallados
- * Filtra por ID del tema padre y Dificultad.
  */
 app.get('/api/ejercicios-detallados/:ejercicioId/:dificultad', async (req, res) => {
   try {
     const { ejercicioId, dificultad } = req.params;
-    
-    console.log(`Petición de Reto -> ID Tema: ${ejercicioId}, Nivel: ${dificultad}`);
-
     const query = `
       SELECT id, enunciado, formula_latex, respuesta_correcta 
       FROM ejercicios_detallados 
@@ -46,15 +41,10 @@ app.get('/api/ejercicios-detallados/:ejercicioId/:dificultad', async (req, res) 
       ORDER BY id ASC 
       LIMIT 5
     `;
-    
     const result = await pool.query(query, [ejercicioId, dificultad]);
-    
     if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        message: "No se encontraron ejercicios para esta combinación." 
-      });
+      return res.status(404).json({ message: "No se encontraron ejercicios." });
     }
-    
     res.json(result.rows);
   } catch (err) {
     console.error("Error en la consulta detallada:", err.message);
@@ -63,19 +53,33 @@ app.get('/api/ejercicios-detallados/:ejercicioId/:dificultad', async (req, res) 
 });
 
 /**
- * API 3: Obtener catálogo de Libros (NUEVA TABLA)
- * Llena la sección de Biblioteca Digital.
+ * API 3: Obtener catálogo de Libros
  */
 app.get('/api/libros', async (req, res) => {
   try {
     const query = 'SELECT * FROM libros ORDER BY id ASC';
     const result = await pool.query(query);
-    
-    console.log(`Petición de Biblioteca -> ${result.rows.length} libros enviados`);
     res.json(result.rows);
   } catch (err) {
     console.error("Error en /api/libros:", err.message);
-    res.status(500).send("Error al obtener la biblioteca de libros");
+    res.status(500).send("Error al obtener libros");
+  }
+});
+
+/**
+ * API 4: Obtener catálogo de Videos (NUEVA RUTA)
+ * Llena la sección estilo YouTube de AdaptiMath.
+ */
+app.get('/api/videos', async (req, res) => {
+  try {
+    const query = 'SELECT * FROM videos ORDER BY id DESC'; // DESC para ver los más nuevos primero
+    const result = await pool.query(query);
+    
+    console.log(`🎬 Petición de Videoteca -> ${result.rows.length} videos enviados`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error en /api/videos:", err.message);
+    res.status(500).send("Error al obtener la lista de videos");
   }
 });
 
@@ -85,6 +89,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor ITVE AdaptiMath corriendo`);
   console.log(`📡 Puerto: ${PORT}`);
   console.log(`📅 Estado: Operativo (CMMI L3 Standards)`);
-  console.log(`📚 Nueva Ruta: /api/libros (Activa)`);
+  console.log(`📚 Ruta Libros: /api/libros (Activa)`);
+  console.log(`🎥 Ruta Videos: /api/videos (Activa)`); // Log de confirmación
   console.log(`==========================================`);
 });

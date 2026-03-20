@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import PanelEjercicio from './components/PanelEjercicio.jsx';
-import SeccionLibros from './components/SeccionLibros.jsx'; // Asegúrate de crear este archivo
+import SeccionLibros from './components/SeccionLibros.jsx'; 
+import SeccionVideos from './components/SeccionVideos.jsx'; // 1. Importamos la nueva sección
 
 function App() {
   const [isMaximized, setIsMaximized] = useState(true);
@@ -10,7 +11,8 @@ function App() {
   const [busqueda, setBusqueda] = useState("");
   
   // ESTADOS PARA NAVEGACIÓN MEJORADA
-  const [vistaActual, setVistaActual] = useState("inicio"); // 'inicio', 'libros', 'reto'
+  // Vistas: 'inicio', 'libros', 'reto', 'videos'
+  const [vistaActual, setVistaActual] = useState("inicio"); 
   const [ejercicioSeleccionado, setEjercicioSeleccionado] = useState(null);
 
   const toggleSidebar = () => setIsMaximized(!isMaximized);
@@ -49,7 +51,7 @@ function App() {
     <div className="app-container">
       {/* NAVBAR SUPERIOR */}
       <nav className="navbar">
-        <div className="logo-container" onClick={irAInicio}>
+        <div className="logo-container" onClick={irAInicio} style={{cursor: 'pointer'}}>
           <img 
             src="/images/logo_itve.png" 
             alt="Logo ITVE" 
@@ -100,7 +102,11 @@ function App() {
               <span className="icon-box">📚</span>
               {isMaximized && <span className="menu-text">Libros</span>}
             </li>
-            <li title="Videos">
+            <li 
+              className={vistaActual === "videos" ? "active" : ""} 
+              onClick={() => setVistaActual("videos")} // 2. Navegación a videos
+              title="Videos"
+            >
               <span className="icon-box">🎥</span>
               {isMaximized && <span className="menu-text">Videos</span>}
             </li>
@@ -117,6 +123,7 @@ function App() {
 
         {/* AREA DE CONTENIDO DINÁMICO */}
         <main className="content-area">
+          {/* 3. Lógica switch/condicional para las vistas */}
           {vistaActual === "reto" ? (
             <PanelEjercicio 
               ejercicio={ejercicioSeleccionado} 
@@ -124,6 +131,8 @@ function App() {
             />
           ) : vistaActual === "libros" ? (
             <SeccionLibros />
+          ) : vistaActual === "videos" ? (
+            <SeccionVideos /> // Renderizamos el nuevo componente estilo YouTube
           ) : (
             <>
               <section className="hero-section">
