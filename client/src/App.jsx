@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import PanelEjercicio from './components/PanelEjercicio.jsx';
 import SeccionLibros from './components/SeccionLibros.jsx'; 
-import SeccionVideos from './components/SeccionVideos.jsx'; // 1. Importamos la nueva sección
+import SeccionVideos from './components/SeccionVideos.jsx'; 
+import SeccionFormulas from './components/SeccionFormulas.jsx'; 
+import ProblemasResueltos from './components/ProblemasResueltos.jsx'; // Importación corregida
 
 function App() {
   const [isMaximized, setIsMaximized] = useState(true);
@@ -10,8 +12,7 @@ function App() {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   
-  // ESTADOS PARA NAVEGACIÓN MEJORADA
-  // Vistas: 'inicio', 'libros', 'reto', 'videos'
+  // Vistas: 'inicio', 'libros', 'reto', 'videos', 'formulas', 'resueltos'
   const [vistaActual, setVistaActual] = useState("inicio"); 
   const [ejercicioSeleccionado, setEjercicioSeleccionado] = useState(null);
 
@@ -104,17 +105,25 @@ function App() {
             </li>
             <li 
               className={vistaActual === "videos" ? "active" : ""} 
-              onClick={() => setVistaActual("videos")} // 2. Navegación a videos
+              onClick={() => setVistaActual("videos")} 
               title="Videos"
             >
               <span className="icon-box">🎥</span>
               {isMaximized && <span className="menu-text">Videos</span>}
             </li>
-            <li title="Formulas">
+            <li 
+              className={vistaActual === "formulas" ? "active" : ""} 
+              onClick={() => setVistaActual("formulas")}
+              title="Formulas"
+            >
               <span className="icon-box">📐</span>
               {isMaximized && <span className="menu-text">Fórmulas</span>}
             </li>
-            <li title="Problemas Resueltos">
+            <li 
+              className={vistaActual === "resueltos" ? "active" : ""} 
+              onClick={() => setVistaActual("resueltos")}
+              title="Problemas Resueltos"
+            >
               <span className="icon-box">✅</span>
               {isMaximized && <span className="menu-text">Problemas Resueltos</span>}
             </li>
@@ -123,7 +132,6 @@ function App() {
 
         {/* AREA DE CONTENIDO DINÁMICO */}
         <main className="content-area">
-          {/* 3. Lógica switch/condicional para las vistas */}
           {vistaActual === "reto" ? (
             <PanelEjercicio 
               ejercicio={ejercicioSeleccionado} 
@@ -132,7 +140,11 @@ function App() {
           ) : vistaActual === "libros" ? (
             <SeccionLibros />
           ) : vistaActual === "videos" ? (
-            <SeccionVideos /> // Renderizamos el nuevo componente estilo YouTube
+            <SeccionVideos /> 
+          ) : vistaActual === "formulas" ? (
+            <SeccionFormulas />
+          ) : vistaActual === "resueltos" ? (
+            <ProblemasResueltos />
           ) : (
             <>
               <section className="hero-section">

@@ -1194,3 +1194,144 @@
 .comment-text p {
     color: #333 !important;
 }
+
+/* =========================================
+   SECCIÓN DE FÓRMULAS MATEMÁTICAS
+   ========================================= */
+.formula-preview {
+    height: 120px;
+    background: #1a365d;
+    color: #00ffcc; /* Estilo terminal/matemático */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+.formula-card-focus {
+    width: 95%;
+    max-width: 800px;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.formula-display {
+    background: #f8f9fa;
+    border-left: 5px solid #1a365d;
+    padding: 20px;
+    font-size: 1.5rem;
+    margin: 20px 0;
+    text-align: center;
+    color: #1a365d;
+}
+
+.exercise-box {
+    background: #fff;
+    border-top: 2px solid #eee;
+    padding-top: 20px;
+}
+
+.step-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    color: #333;
+}
+
+.enunciado {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #000;
+    margin-bottom: 15px;
+}
+
+/*==========================================
+   SECCIÓN DE PROBLEMAS RESUELTOS (ESTILO PREMIUM)
+   ========================================= */
+.docs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.doc-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eef0f2;
+    transition: 0.3s;
+}
+
+.doc-card:hover {
+    transform: translateX(5px);
+    border-color: #1a365d;
+}
+
+.doc-icon {
+    font-size: 2.5rem;
+    background: #f1f5f9;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.doc-info {
+    flex: 1;
+    text-align: left;
+}
+
+.doc-info h3 {
+    color: #1a365d;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.doc-theme {
+    font-weight: bold;
+    color: #cc0000;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.doc-desc {
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.doc-meta {
+    font-size: 0.8rem;
+    color: #888;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-download {
+    background: #1a365d;
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.btn-download:hover {
+    background: #2a4a7d;
+    box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3);
+}
