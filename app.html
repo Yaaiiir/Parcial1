@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#C9A84C"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="La Mesa"/>
+  <title>La Mesa</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cream: #F5F0E8;
+      --dark:  #1A1410;
+      --gold:  #C9A84C;
+      --gold2: #E8C96A;
+      --muted: #8A7A6A;
+      --surf:  #241C15;
+      --surf2: #2E2318;
+      --bord:  rgba(201,168,76,0.18);
+      --green: #7ed89a;
+      --red:   #f08080;
+      --blue:  #a0a8f0;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bot: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      background: var(--dark);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow: hidden;
+    }
+
+    /* ── APP SHELL ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      max-width: 430px;
+      margin: 0 auto;
+      position: relative;
+      background: var(--dark);
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+    }
+
+    /* ── STATUS BAR SPACER ── */
+    .status-bar {
+      height: var(--safe-top);
+      background: var(--surf);
+      min-height: 0;
+    }
+
+    /* ── TOP HEADER ── */
+    .top-bar {
+      background: var(--surf);
+      border-bottom: 1px solid var(--bord);
+      padding: 1rem 1.25rem 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .app-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      font-weight: 300;
+    }
+
+    .app-logo em { font-style: italic; }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(201,168,76,0.15);
+      border: 1px solid var(--bord);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--gold);
+      cursor: pointer;
+    }
+
+    /* ── SCROLLABLE CONTENT ── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; padding: 1.25rem; min-height: 100%; }
+    .screen.active { display: block; }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      background: var(--surf);
+      border-top: 1px solid var(--bord);
+      display: flex;
+      padding-bottom: var(--safe-bot);
+      flex-shrink: 0;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.75rem 0.5rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-item.active { color: var(--gold); }
+
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 25%; right: 25%;
+      height: 2px;
+      background: var(--gold);
+      border-radius: 0 0 2px 2px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .nav-item.active::before { opacity: 1; }
+
+    .nav-icon { font-size: 1.3rem; line-height: 1; }
+    .nav-label { font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--bord);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    .card-body { padding: 1.25rem; }
+
+    /* ── HERO HOME ── */
+    .home-hero {
+      background: linear-gradient(160deg, var(--surf2) 0%, var(--surf) 100%);
+      border: 1px solid var(--bord);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      margin-bottom: 1.25rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .home-hero::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: 50%;
+      transform: translateX(-50%);
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 70%);
+    }
+
+    .home-hero h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 300;
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+
+    .home-hero h2 em { font-style: italic; color: var(--gold); }
+
+    .home-hero p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .quick-btn {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: 12px;
+      padding: 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      text-align: left;
+    }
+
+    .quick-btn:active { transform: scale(0.97); }
+    .quick-btn:hover { border-color: rgba(201,168,76,0.4); }
+
+    .quick-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .quick-label { font-size: 0.8rem; color: var(--cream); font-weight: 400; display: block; }
+    .quick-sub { font-size: 0.72rem; color: var(--muted); display: block; margin-top: 0.1rem; }
+
+    /* ── FORM ELEMENTS ── */
+    .field { margin-bottom: 1rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 8px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      padding: 0.8rem 1rem;
+      outline: none;
+      transition: border-color 0.25s;
+      -webkit-appearance: none;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { border-color: var(--gold); }
+
+    .field select option { background: var(--dark); }
+    .field textarea { resize: none; height: 80px; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      width: 100%;
+      background: var(--gold);
+      border: none;
+      border-radius: 10px;
+      color: var(--dark);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 1rem;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.15s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:hover { background: var(--gold2); }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--bord);
+      border-radius: 10px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: border-color 0.25s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-secondary:hover { border-color: var(--gold); }
+
+    .btn-sm {
+      background: transparent;
+      border: 1px solid var(--bord);
+      border-radius: 6px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-sm.danger { color: var(--red); border-color: rgba(240,128,128,0.25); }
+
+    /* ── TAB SWITCHER ── */
+    .tabs {
+      display: flex;
+      background: var(--surf2);
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab {
+      flex: 1;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      padding: 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      background: var(--surf);
+      color: var(--gold);
+      border: 1px solid var(--bord);
+    }
+
+    /* ── ALERTS ── */
+    .alert {
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    .alert.success { background: rgba(74,153,90,0.12); border: 1px solid rgba(74,153,90,0.3); color: var(--green); display: block; }
+    .alert.error   { background: rgba(200,60,60,0.12);  border: 1px solid rgba(200,60,60,0.3);  color: var(--red);   display: block; }
+
+    /* ── STATUS CHIPS ── */
+    .chip {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+    }
+
+    .chip-confirmed { background: rgba(126,216,154,0.12); color: var(--green); }
+    .chip-pending   { background: rgba(201,168,76,0.12);  color: var(--gold); }
+    .chip-cancelled { background: rgba(240,128,128,0.12); color: var(--red); }
+    .chip-completed { background: rgba(160,168,240,0.12); color: var(--blue); }
+
+    /* ── RESERVATION ROW ── */
+    .res-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(201,168,76,0.07);
+    }
+
+    .res-row:last-child { border-bottom: none; }
+    .res-date { font-family: 'Cormorant Garamond', serif; font-size: 1rem; }
+    .res-time { color: var(--muted); font-size: 0.8rem; margin-top: 0.1rem; }
+
+    /* ── MENU ── */
+    .cat-scroll {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.25rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .cat-scroll::-webkit-scrollbar { display: none; }
+
+    .cat-pill {
+      flex-shrink: 0;
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: 20px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      padding: 0.4rem 1rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .cat-pill.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+
+    .dish-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(201,168,76,0.07);
+    }
+
+    .dish-card:last-child { border-bottom: none; }
+    .dish-name { font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .dish-desc { color: var(--muted); font-size: 0.78rem; line-height: 1.4; max-width: 220px; }
+    .dish-price { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; white-space: nowrap; }
+    .dish-veg { font-size: 0.65rem; color: var(--green); }
+
+    /* ── STARS ── */
+    .stars-row { display: flex; gap: 0.5rem; margin: 0.75rem 0 1rem; }
+    .star-btn { font-size: 1.8rem; cursor: pointer; color: rgba(201,168,76,0.25); transition: color 0.15s; background: none; border: none; padding: 0; }
+    .star-btn.lit { color: var(--gold); }
+
+    /* ── CONFIRMATION ── */
+    .conf-screen {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    .conf-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+
+    .conf-code {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      color: var(--gold);
+      letter-spacing: 0.3em;
+      margin: 0.75rem 0;
+    }
+
+    .conf-info { color: var(--muted); font-size: 0.85rem; line-height: 1.8; }
+
+    /* ── SECTION LABEL ── */
+    .sec-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 1.5rem 0 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--bord); }
+
+    /* ── SCREEN TITLE ── */
+    .screen-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      margin-bottom: 0.25rem;
+    }
+
+    .screen-sub { color: var(--muted); font-size: 0.82rem; margin-bottom: 1.5rem; }
+
+    /* ── INSTALL BANNER ── */
+    .install-banner {
+      display: none;
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .install-banner.show { display: flex; }
+    .install-txt { flex: 1; font-size: 0.82rem; color: var(--muted); }
+    .install-txt strong { display: block; color: var(--cream); margin-bottom: 0.1rem; }
+
+    /* ── SPINNER ── */
+    .spin {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(26,20,16,0.3);
+      border-top-color: var(--dark);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.88rem; }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="status-bar"></div>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="app-logo"><em>La</em> Mesa</div>
+    <div class="top-right">
+      <div class="avatar" id="user-avatar" onclick="goScreen('perfil')" style="display:none">👤</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ── HOME ── -->
+    <div class="screen active" id="screen-home">
+      <div id="install-banner" class="install-banner">
+        <div class="install-txt">
+          <strong>Instalar en tu móvil</strong>
+          Añade La Mesa a tu pantalla de inicio
+        </div>
+        <button class="btn-sm" onclick="installPWA()">Instalar</button>
+        <button class="btn-sm" onclick="document.getElementById('install-banner').classList.remove('show')" style="border:none;color:var(--muted)">✕</button>
+      </div>
+
+      <div class="home-hero">
+        <h2>Una experiencia<br/><em>inolvidable</em></h2>
+        <p>Reserva tu mesa en segundos desde tu teléfono</p>
+        <button class="btn-primary" style="margin-top:0" onclick="goScreen('reservar')">Reservar mesa</button>
+      </div>
+
+      <div class="quick-actions">
+        <div class="quick-btn" onclick="goScreen('menu')">
+          <div class="quick-icon">🍽️</div>
+          <span class="quick-label">Ver Menú</span>
+          <span class="quick-sub">Platos del día</span>
+        </div>
+        <div class="quick-btn" onclick="goScreen('misreservas')">
+          <div class="quick-icon">📅</div>
+          <span class="quick-label">Mis Reservas</span>
+          <span class="quick-sub">Ver historial</span>
+        </div>
+        <div class="quick-btn" onclick="goScreen('resena')">
+          <div class="quick-icon">⭐</div>
+          <span class="quick-label">Reseña</span>
+          <span class="quick-sub">Calificar visita</span>
+        </div>
+        <div class="quick-btn" onclick="goScreen('perfil')">
+          <div class="quick-icon">👤</div>
+          <span class="quick-label">Mi Cuenta</span>
+          <span class="quick-sub">Perfil y sesión</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Próxima reserva</span>
+        </div>
+        <div class="card-body" id="next-reservation">
+          <div class="empty"><div class="empty-icon">📭</div><p>No tienes reservas próximas</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RESERVAR ── -->
+    <div class="screen" id="screen-reservar">
+      <div class="screen-title">Nueva Reserva</div>
+      <div class="screen-sub">Selecciona fecha, hora y personas</div>
+
+      <!-- Auth check -->
+      <div id="auth-gate" style="display:none">
+        <div class="card">
+          <div class="card-body">
+            <p style="color:var(--muted);font-size:.88rem;text-align:center;margin-bottom:1rem">Inicia sesión para reservar</p>
+            <button class="btn-primary" onclick="goScreen('perfil')">Iniciar sesión</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="res-form">
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="r-date"/>
+        </div>
+        <div class="field">
+          <label>Hora</label>
+          <select id="r-time">
+            <option value="08:00:00">08:00 — Desayuno</option>
+            <option value="09:00:00">09:00 — Desayuno</option>
+            <option value="13:00:00">13:00 — Almuerzo</option>
+            <option value="14:00:00">14:00 — Almuerzo</option>
+            <option value="19:00:00" selected>19:00 — Cena</option>
+            <option value="20:00:00">20:00 — Cena</option>
+            <option value="21:00:00">21:00 — Cena tardía</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Número de personas</label>
+          <select id="r-party">
+            <option value="1">1 persona</option>
+            <option value="2" selected>2 personas</option>
+            <option value="3">3 personas</option>
+            <option value="4">4 personas</option>
+            <option value="6">6 personas</option>
+            <option value="8">8 personas</option>
+            <option value="16">16 personas</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Solicitudes especiales</label>
+          <textarea id="r-notes" placeholder="Ej: cumpleaños, alergia a nueces, silla para bebé…"></textarea>
+        </div>
+        <button class="btn-primary" onclick="createReservation()">Confirmar reserva</button>
+        <div id="res-alert" class="alert"></div>
+      </div>
+
+      <!-- Confirmation -->
+      <div class="conf-screen" id="res-conf" style="display:none">
+        <div class="conf-icon">✦</div>
+        <p style="color:var(--muted);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase">Reserva confirmada</p>
+        <div class="conf-code" id="res-conf-code"></div>
+        <p class="conf-info" id="res-conf-info"></p>
+        <button class="btn-secondary" onclick="resetReservation()" style="margin-top:1.5rem">Nueva reserva</button>
+        <button class="btn-secondary" onclick="goScreen('misreservas')">Ver mis reservas</button>
+      </div>
+    </div>
+
+    <!-- ── MENÚ ── -->
+    <div class="screen" id="screen-menu">
+      <div class="screen-title">Nuestro Menú</div>
+      <div class="screen-sub">Cocina de autor con ingredientes de temporada</div>
+      <div class="cat-scroll" id="cat-scroll"></div>
+      <div id="dishes"></div>
+    </div>
+
+    <!-- ── MIS RESERVAS ── -->
+    <div class="screen" id="screen-misreservas">
+      <div class="screen-title">Mis Reservas</div>
+      <div class="screen-sub">Historial y próximas visitas</div>
+      <div id="mis-list"></div>
+    </div>
+
+    <!-- ── RESEÑA ── -->
+    <div class="screen" id="screen-resena">
+      <div class="screen-title">Dejar Reseña</div>
+      <div class="screen-sub">Cuéntanos tu experiencia</div>
+
+      <div class="field">
+        <label>Visita completada</label>
+        <select id="rn-reserva"><option value="">Selecciona una visita…</option></select>
+      </div>
+
+      <div class="sec-label">Tu calificación</div>
+      <div class="stars-row" id="stars-row">
+        <button class="star-btn" onclick="setStars(1)">★</button>
+        <button class="star-btn" onclick="setStars(2)">★</button>
+        <button class="star-btn" onclick="setStars(3)">★</button>
+        <button class="star-btn" onclick="setStars(4)">★</button>
+        <button class="star-btn" onclick="setStars(5)">★</button>
+      </div>
+
+      <div class="field">
+        <label>Comentario (opcional)</label>
+        <textarea id="rn-comment" placeholder="¿Qué fue lo que más te gustó?"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="submitResena()">Enviar reseña</button>
+      <div id="rn-alert" class="alert"></div>
+    </div>
+
+    <!-- ── PERFIL / AUTH ── -->
+    <div class="screen" id="screen-perfil">
+
+      <!-- Login/Register (si no hay sesión) -->
+      <div id="auth-panel">
+        <div class="screen-title">Mi Cuenta</div>
+        <div class="tabs">
+          <button class="tab active" onclick="switchAuthTab('login')">Entrar</button>
+          <button class="tab" onclick="switchAuthTab('register')">Registrarse</button>
+        </div>
+
+        <div id="auth-login">
+          <div class="field"><label>Correo electrónico</label><input type="email" id="a-email" placeholder="tucorreo@email.com" autocomplete="email"/></div>
+          <div class="field"><label>Contraseña</label><input type="password" id="a-pass" placeholder="••••••••" autocomplete="current-password"/></div>
+          <button class="btn-primary" onclick="doLogin()">Iniciar sesión</button>
+          <div id="login-alert" class="alert"></div>
+        </div>
+
+        <div id="auth-register" style="display:none">
+          <div class="field"><label>Nombre completo</label><input type="text" id="a-name" placeholder="Ana García" autocomplete="name"/></div>
+          <div class="field"><label>Correo electrónico</label><input type="email" id="a-remail" placeholder="tucorreo@email.com" autocomplete="email"/></div>
+          <div class="field"><label>Contraseña</label><input type="password" id="a-rpass" placeholder="••••••••" autocomplete="new-password"/></div>
+          <button class="btn-primary" onclick="doRegister()">Crear cuenta</button>
+          <div id="register-alert" class="alert"></div>
+        </div>
+      </div>
+
+      <!-- Perfil (si hay sesión) -->
+      <div id="user-panel" style="display:none">
+        <div class="screen-title" id="profile-name"></div>
+        <div class="screen-sub" id="profile-email"></div>
+
+        <div class="card" style="margin-top:1.5rem">
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem">
+              <span style="color:var(--muted);font-size:.82rem">Rol</span>
+              <span style="font-size:.82rem;color:var(--gold)" id="profile-role"></span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="color:var(--muted);font-size:.82rem">Miembro desde</span>
+              <span style="font-size:.82rem" id="profile-since"></span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-secondary" onclick="doLogout()" style="margin-top:1rem;color:var(--red);border-color:rgba(240,128,128,0.25)">Cerrar sesión</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="goScreen('home')" id="nav-home">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Inicio</span>
+    </button>
+    <button class="nav-item" onclick="goScreen('reservar')" id="nav-reservar">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Reservar</span>
+    </button>
+    <button class="nav-item" onclick="goScreen('menu')" id="nav-menu">
+      <span class="nav-icon">🍽️</span>
+      <span class="nav-label">Menú</span>
+    </button>
+    <button class="nav-item" onclick="goScreen('misreservas')" id="nav-misreservas">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Reservas</span>
+    </button>
+    <button class="nav-item" onclick="goScreen('perfil')" id="nav-perfil">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Cuenta</span>
+    </button>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000';
+let token = localStorage.getItem('lm_token') || null;
+let user  = JSON.parse(localStorage.getItem('lm_user') || 'null');
+let menuData = [];
+let rating = 0;
+let deferredInstall = null;
+
+// ── PWA INSTALL ──────────────────────────────────────────────────
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+
+async function installPWA() {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  const { outcome } = await deferredInstall.userChoice;
+  if (outcome === 'accepted') document.getElementById('install-banner').classList.remove('show');
+  deferredInstall = null;
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────────
+function goScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`screen-${name}`)?.classList.add('active');
+  document.getElementById(`nav-${name}`)?.classList.add('active');
+
+  // Trigger loads
+  if (name === 'menu')        loadMenu();
+  if (name === 'misreservas') loadMyReservations();
+  if (name === 'resena')      loadCompletedForReview();
+  if (name === 'home')        loadNextReservation();
+  if (name === 'reservar')    checkAuthGate();
+  if (name === 'perfil')      renderProfile();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+window.onload = () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('r-date').min = today;
+  document.getElementById('r-date').value = today;
+  renderProfile();
+  loadMenu();
+  loadNextReservation();
+};
+
+// ── AUTH ─────────────────────────────────────────────────────────
+function switchAuthTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('auth-login').style.display    = tab==='login'    ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = tab==='register' ? 'block' : 'none';
+}
+
+async function doLogin() {
+  const email = document.getElementById('a-email').value;
+  const pass  = document.getElementById('a-pass').value;
+  if (!email || !pass) return alert2('login-alert', 'Completa todos los campos', 'error');
+  try {
+    const data = await postForm('/auth/login', `username=${encodeURIComponent(email)}&password=${encodeURIComponent(pass)}`);
+    if (!data.access_token) throw new Error(data.detail || 'Error');
+    token = data.access_token;
+    localStorage.setItem('lm_token', token);
+    const me = await get('/auth/me');
+    user = me; localStorage.setItem('lm_user', JSON.stringify(me));
+    renderProfile();
+    document.getElementById('user-avatar').style.display = 'flex';
+    goScreen('home');
+  } catch(e) { alert2('login-alert', e.message, 'error'); }
+}
+
+async function doRegister() {
+  const name  = document.getElementById('a-name').value;
+  const email = document.getElementById('a-remail').value;
+  const pass  = document.getElementById('a-rpass').value;
+  if (!name || !email || !pass) return alert2('register-alert', 'Completa todos los campos', 'error');
+  try {
+    const data = await post('/auth/register', { email, password: pass, full_name: name });
+    if (!data.id) throw new Error(data.detail || 'Error');
+    alert2('register-alert', '¡Cuenta creada! Iniciando sesión…', 'success');
+    document.getElementById('a-email').value = email;
+    document.getElementById('a-pass').value  = pass;
+    setTimeout(() => { switchAuthTab('login'); doLogin(); }, 1000);
+  } catch(e) { alert2('register-alert', e.message, 'error'); }
+}
+
+function doLogout() {
+  token = null; user = null;
+  localStorage.removeItem('lm_token');
+  localStorage.removeItem('lm_user');
+  document.getElementById('user-avatar').style.display = 'none';
+  renderProfile();
+  goScreen('home');
+}
+
+function renderProfile() {
+  const authPanel = document.getElementById('auth-panel');
+  const userPanel = document.getElementById('user-panel');
+  if (token && user) {
+    authPanel.style.display = 'none';
+    userPanel.style.display = 'block';
+    document.getElementById('profile-name').textContent  = user.full_name;
+    document.getElementById('profile-email').textContent = user.email;
+    document.getElementById('profile-role').textContent  = roleLabel(user.role);
+    document.getElementById('profile-since').textContent = user.created_at?.slice(0,10) || '—';
+    document.getElementById('user-avatar').style.display = 'flex';
+  } else {
+    authPanel.style.display = 'block';
+    userPanel.style.display = 'none';
+  }
+}
+
+function checkAuthGate() {
+  const gate = document.getElementById('auth-gate');
+  const form = document.getElementById('res-form');
+  if (!token) { gate.style.display='block'; form.style.display='none'; }
+  else { gate.style.display='none'; form.style.display='block'; }
+}
+
+// ── RESERVATIONS ─────────────────────────────────────────────────
+async function createReservation() {
+  if (!token) return goScreen('perfil');
+  const date  = document.getElementById('r-date').value;
+  const time  = document.getElementById('r-time').value;
+  const party = parseInt(document.getElementById('r-party').value);
+  const notes = document.getElementById('r-notes').value;
+  if (!date) return alert2('res-alert', 'Selecciona una fecha', 'error');
+  try {
+    const data = await post('/reservations/', { reservation_date: date, start_time: time, party_size: party, special_requests: notes || null });
+    if (!data.id) throw new Error(data.detail || 'No hay mesas disponibles');
+    document.getElementById('res-conf-code').textContent = data.confirmation_code;
+    document.getElementById('res-conf-info').innerHTML =
+      `${fmtDate(data.reservation_date)} · ${data.start_time.slice(0,5)} hrs<br>${data.party_size} persona${data.party_size===1?'':'s'} · Mesa ${data.table_id}`;
+    document.getElementById('res-form').style.display = 'none';
+    document.getElementById('res-conf').style.display = 'block';
+  } catch(e) { alert2('res-alert', e.message, 'error'); }
+}
+
+function resetReservation() {
+  document.getElementById('res-form').style.display = 'block';
+  document.getElementById('res-conf').style.display = 'none';
+  document.getElementById('res-alert').className = 'alert';
+  document.getElementById('r-notes').value = '';
+}
+
+async function loadMyReservations() {
+  if (!token) {
+    document.getElementById('mis-list').innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><p>Inicia sesión para ver tus reservas</p></div>';
+    return;
+  }
+  try {
+    const data = await get('/reservations/my');
+    const el   = document.getElementById('mis-list');
+    if (!data.length) { el.innerHTML='<div class="empty"><div class="empty-icon">📭</div><p>No tienes reservas aún</p></div>'; return; }
+    el.innerHTML = data.map(r => `
+      <div class="card" style="margin-bottom:.75rem">
+        <div class="card-body">
+          <div class="res-row" style="padding-top:0">
+            <div>
+              <div class="res-date">${fmtDate(r.reservation_date)}</div>
+              <div class="res-time">${r.start_time.slice(0,5)} hrs · ${r.party_size} persona${r.party_size>1?'s':''} · Mesa ${r.table_id}</div>
+            </div>
+            <span class="chip chip-${r.status}">${statusLabel(r.status)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--bord)">
+            <span style="font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:1rem">${r.confirmation_code}</span>
+            ${(r.status==='confirmed'||r.status==='pending')
+              ? `<button class="btn-sm danger" onclick="cancelRes(${r.id},this)">Cancelar</button>`
+              : ''}
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+async function cancelRes(id, btn) {
+  if (!confirm('¿Cancelar esta reserva?')) return;
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    await authFetch(`/reservations/${id}/cancel`, 'PUT');
+    loadMyReservations();
+  } catch(e) { btn.textContent = 'Cancelar'; btn.disabled = false; }
+}
+
+async function loadNextReservation() {
+  if (!token) return;
+  try {
+    const data = await get('/reservations/my');
+    const upcoming = data.filter(r => r.status === 'confirmed' || r.status === 'pending');
+    const el = document.getElementById('next-reservation');
+    if (!upcoming.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>No tienes reservas próximas</p></div>'; return; }
+    const r = upcoming[0];
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem">${fmtDate(r.reservation_date)}</div>
+          <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem">${r.start_time.slice(0,5)} hrs · ${r.party_size} persona${r.party_size>1?'s':''}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1rem">${r.confirmation_code}</div>
+          <span class="chip chip-${r.status}" style="margin-top:.25rem">${statusLabel(r.status)}</span>
+        </div>
+      </div>`;
+  } catch(e) {}
+}
+
+// ── MENU ─────────────────────────────────────────────────────────
+async function loadMenu() {
+  try {
+    menuData = await (await fetch(`${API}/menu/`)).json();
+    const cats = document.getElementById('cat-scroll');
+    cats.innerHTML = `<button class="cat-pill active" onclick="filterDishes(null,this)">Todos</button>` +
+      menuData.map(c => `<button class="cat-pill" onclick="filterDishes(${c.id},this)">${c.name}</button>`).join('');
+    renderDishes(null);
+  } catch(e) { document.getElementById('dishes').innerHTML = '<div class="empty"><p>No se pudo cargar el menú</p></div>'; }
+}
+
+function filterDishes(catId, btn) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderDishes(catId);
+}
+
+function renderDishes(catId) {
+  const items = catId === null
+    ? menuData.flatMap(c => c.items)
+    : (menuData.find(c => c.id === catId)?.items || []);
+  const el = document.getElementById('dishes');
+  if (!items.length) { el.innerHTML = '<div class="empty"><p>Sin platos disponibles</p></div>'; return; }
+
+  // Group by category if showing all
+  if (catId === null) {
+    el.innerHTML = menuData.map(c => c.items.length ? `
+      <div class="sec-label">${c.name}</div>
+      <div class="card">
+        <div class="card-body" style="padding-top:.5rem;padding-bottom:.5rem">
+          ${c.items.map(i => dishRow(i)).join('')}
+        </div>
+      </div>` : '').join('');
+  } else {
+    el.innerHTML = `<div class="card"><div class="card-body" style="padding-top:.5rem;padding-bottom:.5rem">${items.map(i => dishRow(i)).join('')}</div></div>`;
+  }
+}
+
+function dishRow(i) {
+  return `<div class="dish-card">
+    <div style="flex:1">
+      <div class="dish-name">${i.name}</div>
+      ${i.description ? `<div class="dish-desc">${i.description}</div>` : ''}
+      ${i.is_vegetarian ? `<div class="dish-veg">🌿 Vegetariano</div>` : ''}
+      ${i.allergens ? `<div style="color:var(--muted);font-size:.72rem;margin-top:.2rem">⚠ ${i.allergens}</div>` : ''}
+    </div>
+    <div style="text-align:right;margin-left:1rem">
+      <div class="dish-price">$${i.price.toFixed(2)}</div>
+      ${!i.is_available ? `<div style="color:var(--red);font-size:.65rem;margin-top:.2rem">No disponible</div>` : ''}
+    </div>
+  </div>`;
+}
+
+// ── REVIEWS ──────────────────────────────────────────────────────
+async function loadCompletedForReview() {
+  if (!token) return;
+  try {
+    const data = await get('/reservations/my');
+    const completed = data.filter(r => r.status === 'completed');
+    const sel = document.getElementById('rn-reserva');
+    sel.innerHTML = !completed.length
+      ? '<option value="">No tienes visitas completadas aún</option>'
+      : '<option value="">Selecciona una visita…</option>' +
+        completed.map(r => `<option value="${r.id}">${fmtDate(r.reservation_date)} · ${r.start_time.slice(0,5)} hrs</option>`).join('');
+  } catch(e) {}
+}
+
+function setStars(n) {
+  rating = n;
+  document.querySelectorAll('.star-btn').forEach((s,i) => s.classList.toggle('lit', i < n));
+}
+
+async function submitResena() {
+  if (!token) return goScreen('perfil');
+  const id      = parseInt(document.getElementById('rn-reserva').value);
+  const comment = document.getElementById('rn-comment').value;
+  if (!id)     return alert2('rn-alert', 'Selecciona una visita', 'error');
+  if (!rating) return alert2('rn-alert', 'Selecciona tu calificación', 'error');
+  try {
+    const data = await post('/reviews/', { reservation_id: id, rating, comment: comment || null });
+    if (!data.id) throw new Error(data.detail || 'Error al enviar reseña');
+    alert2('rn-alert', '¡Gracias por tu reseña! 🌟', 'success');
+    document.getElementById('rn-comment').value = '';
+    setStars(0);
+    setTimeout(() => goScreen('home'), 1500);
+  } catch(e) { alert2('rn-alert', e.message, 'error'); }
+}
+
+// ── HTTP HELPERS ─────────────────────────────────────────────────
+async function get(path) {
+  const res = await fetch(`${API}${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  return res.json();
+}
+
+async function post(path, body) {
+  const res = await fetch(`${API}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+async function postForm(path, body) {
+  const res = await fetch(`${API}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body
+  });
+  return res.json();
+}
+
+async function authFetch(path, method = 'GET') {
+  return fetch(`${API}${path}`, { method, headers: { Authorization: `Bearer ${token}` } });
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────
+function alert2(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = `alert ${type}`;
+}
+
+function fmtDate(d) {
+  const [y,m,day] = d.split('-');
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${parseInt(day)} ${months[parseInt(m)-1]} ${y}`;
+}
+
+function statusLabel(s) {
+  return { confirmed:'Confirmada', pending:'Pendiente', cancelled:'Cancelada', completed:'Completada', no_show:'No se presentó' }[s] || s;
+}
+
+function roleLabel(r) {
+  return { customer:'Cliente', staff:'Personal', manager:'Gerente', CUSTOMER:'Cliente', STAFF:'Personal', MANAGER:'Gerente' }[r] || r;
+}
+</script>
+</body>
+</html>
