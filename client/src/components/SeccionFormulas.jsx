@@ -126,4 +126,51 @@ const SeccionFormulas = () => {
     );
 };
 
+/*import React, { useState, useEffect } from 'react';
+
+const MathEngine = ({ topic }) => {
+  const [exercise, setExercise] = useState(null);
+  const [level, setLevel] = useState(1);
+
+  const generateProblem = (currentLevel) => {
+    // La "Inteligencia" ajusta el rango de números según el nivel
+    const max = currentLevel * 10;
+    const min = currentLevel;
+    
+    const a = Math.floor(Math.random() * (max - min + 1) + min);
+    const b = Math.floor(Math.random() * (max - min + 1) + min);
+
+    return { 
+      question: `${a} + ${b} = ?`, 
+      answer: a + b,
+      difficulty: currentLevel 
+    };
+  };
+
+  const handleAnswer = (userAns) => {
+    if (parseInt(userAns) === exercise.answer) {
+      // Algoritmo de Refuerzo Positivo: sube la dificultad gradualmente
+      setLevel(prev => prev + 0.5);
+      alert("¡Correcto! Aumentando dificultad...");
+    } else {
+      // Algoritmo de Ajuste: baja la dificultad para evitar frustración
+      setLevel(prev => Math.max(1, prev - 0.3));
+      alert("Sigue practicando, ajustando nivel.");
+    }
+    setExercise(generateProblem(level));
+  };
+
+  return (
+    <div className="p-4 border rounded shadow">
+      <h3>Tema: {topic}</h3>
+      <p className="text-sm">Nivel de dificultad actual: {level.toFixed(1)}</p>
+      {exercise && (
+        <div>
+          <h2 className="text-xl font-bold">{exercise.question}</h2>
+        </div>
+      )}
+    </div>
+  );
+};*/ 
+
 export default SeccionFormulas;
