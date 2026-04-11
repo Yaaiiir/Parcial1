@@ -1,0 +1,57 @@
+<div class="page-shell profile-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mi perfil</h1>
+      <p class="page-sub">Consulta tus datos de acceso y actualiza tu contrasena.</p>
+    </div>
+  </div>
+
+  <div class="profile-grid" *ngIf="!loading; else loadingState">
+    <section class="surface-card profile-card">
+      <span class="avatar-circle large">{{ authService.currentUser?.name?.charAt(0) }}</span>
+      <h2>{{ authService.currentUser?.name }}</h2>
+      <p>{{ authService.currentUser?.email }}</p>
+      <span class="role-pill" [ngClass]="'role-' + authService.currentUser?.role?.toLowerCase()">
+        {{ authService.currentUser?.role }}
+      </span>
+    </section>
+
+    <section class="surface-card password-card">
+      <h2>Cambiar contrasena</h2>
+      <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="password-form">
+        <mat-form-field appearance="outline" class="soft-field">
+          <mat-label>Contrasena actual</mat-label>
+          <input matInput [type]="hideCurrentPassword ? 'password' : 'text'" formControlName="currentPassword" />
+          <button mat-icon-button matSuffix type="button" (click)="hideCurrentPassword = !hideCurrentPassword">
+            <mat-icon>{{ hideCurrentPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="soft-field">
+          <mat-label>Nueva contrasena</mat-label>
+          <input matInput [type]="hideNewPassword ? 'password' : 'text'" formControlName="newPassword" />
+          <button mat-icon-button matSuffix type="button" (click)="hideNewPassword = !hideNewPassword">
+            <mat-icon>{{ hideNewPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          <mat-hint class="password-hint">Minimo 8 caracteres, 1 mayuscula, 1 numero y 1 simbolo.</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="soft-field">
+          <mat-label>Confirmar nueva contrasena</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" />
+          <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-raised-button class="primary-button" type="submit" [disabled]="saving">
+          {{ saving ? 'Guardando...' : 'Actualizar contrasena' }}
+        </button>
+      </form>
+    </section>
+  </div>
+
+  <ng-template #loadingState>
+    <div class="surface-card loading-card">Cargando perfil...</div>
+  </ng-template>
+</div>

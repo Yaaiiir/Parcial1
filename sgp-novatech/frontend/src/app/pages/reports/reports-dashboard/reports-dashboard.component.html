@@ -1,0 +1,249 @@
+<div class="page-shell reports-container">
+  <div class="reports-header">
+    <div>
+      <h1 class="page-title">Reportes</h1>
+      <p class="subtitle">Metricas de calidad y avance del sistema</p>
+    </div>
+
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="project-filter">
+        <mat-label>Filtrar por proyecto</mat-label>
+        <mat-select [(ngModel)]="selectedProjectId" (ngModelChange)="onProjectChange()">
+          <mat-option value="">Todos los proyectos</mat-option>
+          <mat-option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        class="primary-button"
+        (click)="exportToPDF()"
+        [disabled]="isLoading || isExporting">
+        <mat-icon>picture_as_pdf</mat-icon>
+        {{ isExporting ? 'Exportando...' : 'Exportar PDF' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container surface-card">
+    <mat-spinner diameter="42"></mat-spinner>
+    <p>Calculando metricas...</p>
+  </div>
+
+  <div *ngIf="!isLoading && errorMessage" class="loading-container surface-card">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="!isLoading && data" #reportContent class="report-content">
+    <section class="portfolio-summary surface-card" *ngIf="showPortfolioSummary">
+      <div class="section-head">
+        <div>
+          <h2>Resumen ejecutivo del portafolio</h2>
+          <p>Vista consolidada de los proyectos activos con foco en avance, riesgo y tiempo restante.</p>
+        </div>
+      </div>
+
+      <div class="portfolio-kpis">
+        <mat-card class="portfolio-kpi">
+          <mat-card-content>
+            <p class="kpi-label">Proyectos activos</p>
+            <p class="kpi-value">{{ data.portfolioSummary?.activeProjects }}</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="portfolio-kpi">
+          <mat-card-content>
+            <p class="kpi-label">Promedio de avance</p>
+            <p class="kpi-value">{{ data.portfolioSummary?.averageProgress }}%</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="portfolio-kpi warning">
+          <mat-card-content>
+            <p class="kpi-label">Proyectos en riesgo</p>
+            <p class="kpi-value">{{ data.portfolioSummary?.atRiskProjects }}</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="portfolio-kpi success">
+          <mat-card-content>
+            <p class="kpi-label">Proyectos estables</p>
+            <p class="kpi-value">{{ data.portfolioSummary?.onTrackProjects }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="portfolio-grid">
+        <article
+          class="portfolio-card"
+          *ngFor="let project of portfolioProjects"
+          [ngClass]="'tone-' + getPortfolioTone(project)"
+          (click)="openProjectDetail(project.id)"
+          tabindex="0"
+          role="button"
+          (keyup.enter)="openProjectDetail(project.id)">
+          <div class="portfolio-card-top">
+            <div>
+              <p class="portfolio-code">{{ project.publicCode || 'PRJ-000' }}</p>
+              <h3>{{ project.name }}</h3>
+            </div>
+            <span class="portfolio-pill" [ngClass]="'pill-' + getPortfolioTone(project)">
+              {{ getPortfolioAlert(project) }}
+            </span>
+          </div>
+
+          <div class="portfolio-meta">
+            <span>Lider: {{ project.leader.name }}</span>
+            <span>{{ getDaysRemainingLabel(project.daysRemaining) }}</span>
+          </div>
+
+          <div class="portfolio-progress">
+            <div class="progress-label">
+              <span>Avance</span>
+              <strong>{{ project.progress }}%</strong>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="project.progress"></mat-progress-bar>
+          </div>
+
+          <div class="portfolio-stats">
+            <div>
+              <small>Total</small>
+              <strong>{{ project.totalTasks }}</strong>
+            </div>
+            <div>
+              <small>Abiertas</small>
+              <strong>{{ project.openTasks }}</strong>
+            </div>
+            <div>
+              <small>Tareas vencidas</small>
+              <strong>{{ project.overdueTasks }}</strong>
+            </div>
+            <div>
+              <small>Alta prioridad</small>
+              <strong>{{ project.highPriorityTasks }}</strong>
+            </div>
+          </div>
+
+          <p class="portfolio-insight">
+            {{ getOverdueTasksLabel(project.overdueTasks) }}. {{ project.overdueRate }}% de las tareas abiertas estan vencidas.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="surface-card consolidated-section" *ngIf="showPortfolioSummary">
+      <div class="section-head compact">
+        <div>
+          <h2>Analisis consolidado del portafolio</h2>
+          <p>Distribucion general del trabajo activo, sin duplicar el resumen ejecutivo superior.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="kpi-row" *ngIf="!showPortfolioSummary">
+      <mat-card class="kpi-card primary">
+        <mat-card-content>
+          <p class="kpi-label">Avance global</p>
+          <p class="kpi-value">{{ data.globalProgress.percentage }}%</p>
+          <p class="kpi-sub">{{ data.globalProgress.completed }} de {{ data.globalProgress.total }} tareas completadas</p>
+          <mat-progress-bar mode="determinate" [value]="data.globalProgress.percentage"></mat-progress-bar>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card" [class.kpi-alert]="data.overdueTasks.length > 0">
+        <mat-card-content>
+          <p class="kpi-label">Tareas vencidas</p>
+          <p class="kpi-value">{{ data.overdueTasks.length }}</p>
+          <p class="kpi-sub">Sin completar despues de su fecha limite</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-card-content>
+          <p class="kpi-label">Total de tareas</p>
+          <p class="kpi-value">{{ data.globalProgress.total }}</p>
+          <p class="kpi-sub">En el alcance seleccionado</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="charts-row">
+      <mat-card class="chart-card surface-card">
+        <mat-card-header>
+          <mat-card-title>Tareas por estado</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-box">
+            <canvas baseChart [data]="statusChartData" [options]="doughnutOptions" type="doughnut"></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card surface-card">
+        <mat-card-header>
+          <mat-card-title>Tareas por prioridad</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-box">
+            <canvas baseChart [data]="priorityChartData" [options]="priorityBarOptions" type="bar"></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <mat-card class="chart-card full-width surface-card">
+      <mat-card-header>
+        <mat-card-title>Productividad por miembro</mat-card-title>
+        <mat-card-subtitle>Tareas completadas vs pendientes</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-box large" *ngIf="data.productivityByMember.length > 0; else emptyProductivity">
+          <canvas baseChart [data]="productivityChartData" [options]="barOptions" type="bar"></canvas>
+        </div>
+
+        <ng-template #emptyProductivity>
+          <p class="empty-state">No hay datos de productividad disponibles.</p>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="data.overdueTasks.length > 0" class="overdue-card full-width surface-card">
+      <mat-card-header>
+        <mat-card-title>Tareas vencidas ({{ data.overdueTasks.length }})</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="data.overdueTasks" class="overdue-table">
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Tarea</th>
+            <td mat-cell *matCellDef="let task">{{ task.title }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="project">
+            <th mat-header-cell *matHeaderCellDef>Proyecto</th>
+            <td mat-cell *matCellDef="let task">{{ task.project.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="assignee">
+            <th mat-header-cell *matHeaderCellDef>Responsable</th>
+            <td mat-cell *matCellDef="let task">{{ task.assignee?.name || 'Sin asignar' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="deadline">
+            <th mat-header-cell *matHeaderCellDef>Vencio el</th>
+            <td mat-cell *matCellDef="let task" [ngClass]="getDueDateClass(task)">
+              {{ task.deadline | date:'dd/MM/yyyy' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="priority">
+            <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+            <td mat-cell *matCellDef="let task">{{ getPriorityLabel(task.priority) }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="overdueColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: overdueColumns"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

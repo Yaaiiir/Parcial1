@@ -1,0 +1,190 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// schema.prisma — SGP NovaTech Consulting
+// ORM: Prisma  |  BD: SQLite (desarrollo) → cambiar a postgresql en producción
+// ─────────────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // en .env → DATABASE_URL="file:./dev.db"
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENUMS
+// Nota: SQLite no soporta enums nativos. Prisma los mapea como String en la BD
+// y los valida a nivel de aplicación. El comportamiento es idéntico al usar
+// PostgreSQL donde sí existen como tipos nativos.
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN     // Gestiona usuarios y configuración global del sistema
+  GERENTE   // Crea proyectos, asigna líderes, revisa reportes
+  LIDER     // Crea y asigna tareas, monitorea avance del equipo
+  EMPLEADO  // Ejecuta tareas asignadas, actualiza estados
+}
+
+enum ProjectStatus {
+  ACTIVO   // Proyecto en ejecución, acepta nuevas tareas
+  PAUSADO  // Temporalmente detenido, no acepta nuevas tareas
+  CERRADO  // Finalizado y archivado, solo lectura
+}
+
+enum TaskStatus {
+  PENDIENTE    // Tarea creada, aún no iniciada
+  EN_PROGRESO  // Tarea en ejecución activa
+  EN_REVISION  // Tarea completada pendiente de revisión por el líder
+  COMPLETADA   // Tarea aprobada y finalizada
+}
+
+enum Priority {
+  ALTA  // Debe completarse antes que cualquier tarea MEDIA o BAJA
+  MEDIA // Prioridad estándar
+  BAJA  // Puede posponerse si hay tareas ALTA pendientes
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODEL: User
+// Representa a cualquier persona que accede al sistema.
+// Un mismo usuario puede ser miembro de múltiples proyectos (ver ProjectMember).
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid()) // cuid() genera IDs únicos tipo "clxxxxxxx"
+  name         String
+  email        String   @unique
+  passwordHash String   // NUNCA guardar la contraseña en texto plano. Usar bcrypt.
+  role         Role     @default(EMPLEADO)
+  isActive     Boolean  @default(true)       // false = cuenta desactivada (no se elimina)
+  createdAt    DateTime @default(now())
+
+  // ── Relaciones ──────────────────────────────────────────────────────────────
+  // Proyectos que este usuario CREÓ (como gerente)
+  createdProjects  Project[]       @relation("ProjectCreator")
+
+  // Proyectos donde este usuario es el LÍDER asignado
+  ledProjects      Project[]       @relation("ProjectLeader")
+
+  // Membresías: proyectos de los que este usuario es miembro (tabla intermedia)
+  memberships      ProjectMember[]
+
+  // Tareas asignadas a este usuario
+  assignedTasks    Task[]          @relation("TaskAssignee")
+
+  // Comentarios escritos por este usuario
+  comments         Comment[]
+
+  @@map("users") // nombre de la tabla en SQLite
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODEL: Project
+// Representa un proyecto de la empresa.
+// Tiene dos relaciones con User: el creador (gerente) y el líder asignado.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  description String?       // opcional, puede ser null
+  startDate   DateTime
+  deadline    DateTime
+  status      ProjectStatus @default(ACTIVO)
+  createdAt   DateTime      @default(now())
+
+  // ── FKs ─────────────────────────────────────────────────────────────────────
+  creatorId   String        // FK → users.id (gerente que creó el proyecto)
+  leaderId    String        // FK → users.id (líder asignado al proyecto)
+
+  // ── Relaciones ──────────────────────────────────────────────────────────────
+  creator     User          @relation("ProjectCreator", fields: [creatorId], references: [id])
+  leader      User          @relation("ProjectLeader",  fields: [leaderId],  references: [id])
+
+  // Miembros del proyecto (tabla intermedia)
+  members     ProjectMember[]
+
+  // Tareas del proyecto
+  tasks       Task[]
+
+  @@map("projects")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODEL: ProjectMember
+// Tabla de unión (join table) entre Project y User.
+// Modela la relación N:M: un proyecto tiene muchos miembros, y un usuario
+// puede ser miembro de muchos proyectos.
+// La PK es COMPUESTA: la combinación de projectId + userId debe ser única.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model ProjectMember {
+  projectId  String
+  userId     String
+  joinedAt   DateTime @default(now())
+
+  // ── Relaciones ──────────────────────────────────────────────────────────────
+  project    Project  @relation(fields: [projectId], references: [id])
+  user       User     @relation(fields: [userId],    references: [id])
+
+  // PK compuesta: no puede haber dos filas con el mismo projectId + userId
+  @@id([projectId, userId])
+  @@map("project_members")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODEL: Task
+// Representa una tarea dentro de un proyecto.
+// Cada tarea pertenece a exactamente un proyecto y tiene exactamente un responsable.
+// completedAt es null hasta que la tarea pasa a estado COMPLETADA.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(PENDIENTE)
+  priority    Priority   @default(MEDIA)
+  deadline    DateTime
+  completedAt DateTime?  // null hasta que status = COMPLETADA
+  createdAt   DateTime   @default(now())
+
+  // ── FKs ─────────────────────────────────────────────────────────────────────
+  projectId   String     // FK → projects.id
+  assigneeId  String     // FK → users.id (empleado responsable)
+
+  // ── Relaciones ──────────────────────────────────────────────────────────────
+  project     Project    @relation(fields: [projectId],  references: [id])
+  assignee    User       @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  comments    Comment[]
+
+  // Índices para acelerar consultas frecuentes
+  @@index([projectId])   // consultas "dame todas las tareas del proyecto X"
+  @@index([assigneeId])  // consultas "dame todas las tareas del usuario X"
+  @@index([status])      // consultas "dame todas las tareas PENDIENTES"
+  @@map("tasks")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODEL: Comment
+// Comentarios asociados a una tarea.
+// No se pueden eliminar (trazabilidad del historial).
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  // ── FKs ─────────────────────────────────────────────────────────────────────
+  taskId    String   // FK → tasks.id
+  authorId  String   // FK → users.id
+
+  // ── Relaciones ──────────────────────────────────────────────────────────────
+  task      Task     @relation(fields: [taskId],   references: [id])
+  author    User     @relation(fields: [authorId], references: [id])
+
+  @@index([taskId]) // consultas "dame todos los comentarios de la tarea X"
+  @@map("comments")
+}

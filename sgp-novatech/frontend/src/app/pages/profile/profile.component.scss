@@ -1,0 +1,106 @@
+.profile-page {
+  display: grid;
+  gap: 20px;
+}
+
+.page-title {
+  margin: 0;
+  color: var(--nt-primary);
+  font-size: 2rem;
+}
+
+.page-sub {
+  margin: 6px 0 0;
+  color: var(--nt-muted);
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+  gap: 20px;
+}
+
+.profile-card,
+.password-card,
+.loading-card {
+  padding: 28px;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.profile-card h2,
+.password-card h2 {
+  margin: 0;
+  color: var(--nt-primary);
+}
+
+.profile-card p {
+  margin: 0;
+  color: var(--nt-muted);
+}
+
+.avatar-circle.large {
+  width: 60px;
+  height: 60px;
+  font-size: 1.2rem;
+}
+
+.password-form {
+  display: grid;
+  gap: 16px;
+}
+
+.soft-field {
+  --mdc-outlined-text-field-focus-outline-color: var(--nt-secondary);
+  --mdc-outlined-text-field-hover-outline-color: #a9c0ef;
+}
+
+.password-hint {
+  color: var(--nt-secondary);
+}
+
+.primary-button {
+  background: var(--nt-primary);
+  color: white;
+  justify-self: start;
+}
+
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role-pill.role-admin {
+  color: #7a36dd;
+  background: rgba(122, 54, 221, 0.1);
+}
+
+.role-pill.role-gerente {
+  color: var(--nt-primary);
+  background: rgba(22, 41, 97, 0.1);
+}
+
+.role-pill.role-lider {
+  color: var(--nt-success);
+  background: rgba(39, 174, 68, 0.1);
+}
+
+.role-pill.role-empleado {
+  color: #5f6c84;
+  background: #eef1f6;
+}
+
+@media (max-width: 960px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}

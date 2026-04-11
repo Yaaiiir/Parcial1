@@ -1,0 +1,71 @@
+<mat-toolbar class="navbar">
+  <div class="nav-left">
+    <button mat-icon-button class="mobile-nav-trigger" [matMenuTriggerFor]="mobileNavMenu" aria-label="Abrir navegacion">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <a class="brand" routerLink="/dashboard">
+      <img class="brand-mark" src="/novatech-logo.svg" alt="NovaTech SGP" />
+      <span class="brand-text">NovaTech SGP</span>
+    </a>
+
+    <nav class="nav-links">
+      <a *ngFor="let link of navLinks" [routerLink]="link.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: link.path === '/dashboard' }">
+        {{ link.label }}
+      </a>
+    </nav>
+  </div>
+
+  <div class="nav-right">
+    <button mat-icon-button [matMenuTriggerFor]="notificationsMenu" class="notification-button" aria-label="Abrir notificaciones">
+      <mat-icon>notifications</mat-icon>
+      <span class="notification-badge" *ngIf="unreadNotifications.length > 0">{{ unreadNotifications.length }}</span>
+    </button>
+
+    <div class="user-block">
+      <span class="user-name">{{ authService.currentUser?.name }}</span>
+      <span class="user-role">{{ authService.currentUser?.role }}</span>
+    </div>
+
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar-button" aria-label="Abrir menu de usuario">
+      <span class="avatar-circle">{{ getInitials() }}</span>
+    </button>
+
+    <mat-menu #mobileNavMenu="matMenu">
+      <button mat-menu-item *ngFor="let link of navLinks" [routerLink]="link.path">
+        <span>{{ link.label }}</span>
+      </button>
+    </mat-menu>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon>
+        <span>Mi perfil</span>
+      </button>
+      <button mat-menu-item (click)="authService.logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Cerrar sesion</span>
+      </button>
+    </mat-menu>
+
+    <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+      <div class="notification-panel" *ngIf="notificationsService.current.length > 0; else emptyNotifications">
+        <button
+          mat-menu-item
+          class="notification-item"
+          *ngFor="let notification of notificationsService.current"
+          (click)="openNotification(notification)">
+          <div class="notification-copy">
+            <strong>{{ notification.title }}</strong>
+            <span>{{ notification.message }}</span>
+            <small>{{ formatNotificationDate(notification.createdAt) }}</small>
+          </div>
+        </button>
+      </div>
+
+      <ng-template #emptyNotifications>
+        <div class="notification-empty">No tienes notificaciones nuevas.</div>
+      </ng-template>
+    </mat-menu>
+  </div>
+</mat-toolbar>

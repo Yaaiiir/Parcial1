@@ -1,0 +1,95 @@
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 720px;
+  padding: 48px 50px 40px;
+  border-radius: 22px;
+}
+
+.logo-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.brand-mark {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+}
+
+.logo-stack h1 {
+  margin: 0;
+  color: var(--nt-primary);
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.logo-stack p {
+  margin: 0;
+  font-size: 17px;
+  color: #52627f;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.session-notice {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(46, 94, 182, 0.14);
+  background: rgba(46, 94, 182, 0.08);
+  color: var(--nt-primary);
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.login-form .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 12px;
+}
+
+.login-form .mat-mdc-text-field-wrapper {
+  min-height: 68px;
+}
+
+.submit-btn {
+  height: 60px;
+  margin-top: 4px;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, var(--nt-primary), #243978) !important;
+  color: white !important;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.error-msg {
+  color: var(--nt-danger);
+  font-size: 13px;
+  text-align: center;
+  margin: -2px 0 0;
+}
+
+@media (max-width: 640px) {
+  .login-card {
+    padding: 32px 22px 28px;
+  }
+}

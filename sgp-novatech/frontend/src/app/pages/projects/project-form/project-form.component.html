@@ -1,0 +1,60 @@
+<div class="dialog-shell">
+  <h2 mat-dialog-title>{{ isEdit ? 'Editar proyecto' : 'Nuevo proyecto' }}</h2>
+  <p class="dialog-subtitle">Define el alcance, fechas y lider asignado del proyecto.</p>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" class="form-grid">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre del proyecto *</mat-label>
+        <input matInput formControlName="name" placeholder="Ej: Portal Web Cliente" />
+        <mat-error *ngIf="form.get('name')?.hasError('required')">El nombre es requerido</mat-error>
+        <mat-error *ngIf="form.get('name')?.hasError('minlength')">Minimo 3 caracteres</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descripcion</mat-label>
+        <textarea matInput formControlName="description" rows="4" placeholder="Describe el objetivo del proyecto..."></textarea>
+      </mat-form-field>
+
+      <div class="two-col">
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha de inicio *</mat-label>
+          <input matInput [matDatepicker]="pickerStart" formControlName="startDate" />
+          <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+          <mat-datepicker #pickerStart></mat-datepicker>
+          <mat-error>Fecha requerida</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha limite *</mat-label>
+          <input matInput [matDatepicker]="pickerEnd" formControlName="deadline" />
+          <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+          <mat-datepicker #pickerEnd></mat-datepicker>
+          <mat-error>Fecha requerida</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="date-error" *ngIf="form.hasError('dateRange')">
+        La fecha limite debe ser posterior a la fecha de inicio
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Lider asignado *</mat-label>
+        <mat-select formControlName="leaderId">
+          <mat-option *ngFor="let leader of leaders" [value]="leader.id">
+            {{ leader.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error>El lider es requerido</mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button class="ghost-button" (click)="onCancel()">Cancelar</button>
+    <button mat-raised-button class="submit-button" (click)="onSubmit()" [disabled]="form.invalid || loading">
+      <mat-spinner diameter="18" *ngIf="loading"></mat-spinner>
+      <span *ngIf="!loading">{{ isEdit ? 'Guardar cambios' : 'Crear proyecto' }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>
