@@ -1,0 +1,81 @@
+<div class="dialog-shell">
+  <h2 mat-dialog-title>{{ isEdit ? 'Editar usuario' : (createdUser ? 'Usuario creado' : 'Nuevo usuario') }}</h2>
+  <p class="dialog-subtitle" *ngIf="!createdUser">
+    {{ isEdit ? 'Actualiza la informacion principal y el estado de la cuenta.' : 'Crea una cuenta nueva y asigna su rol dentro del sistema.' }}
+  </p>
+
+  <mat-dialog-content *ngIf="!createdUser; else createdUserState">
+    <div class="dialog-head" *ngIf="data.user">
+      <span class="avatar-circle">{{ data.user.name.charAt(0) }}</span>
+      <div>
+        <strong>{{ data.user.name }}</strong>
+        <p>{{ data.user.email }}</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" class="user-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre completo</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo electronico</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="role">
+          <mat-option *ngFor="let role of roleOptions" [value]="role">{{ role }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="toggle-wrap">
+        <mat-slide-toggle formControlName="isActive">Usuario activo</mat-slide-toggle>
+      </div>
+
+      <div class="dialog-note-block">
+        <p class="dialog-note">
+          Desactivar una cuenta impide el acceso, pero conserva el historial para seguimiento y trazabilidad.
+        </p>
+
+        <p class="dialog-note" *ngIf="!isEdit">
+          El sistema generara una contrasena temporal automaticamente y la mostrara al finalizar.
+        </p>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <ng-template #createdUserState>
+    <mat-dialog-content>
+      <div class="dialog-head">
+        <span class="avatar-circle">{{ createdUser?.name?.charAt(0) }}</span>
+        <div>
+          <strong>{{ createdUser?.name }}</strong>
+          <p>{{ createdUser?.email }}</p>
+        </div>
+      </div>
+
+      <p class="dialog-subtitle created-subtitle">Comparte esta contrasena temporal con el usuario para su primer acceso.</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contrasena temporal</mat-label>
+        <input matInput [value]="createdUser?.temporaryPassword" readonly />
+      </mat-form-field>
+    </mat-dialog-content>
+  </ng-template>
+
+  <mat-dialog-actions align="end" class="dialog-actions" *ngIf="!createdUser">
+    <button mat-button class="ghost-button" type="button" (click)="onCancel()">Cancelar</button>
+    <button mat-raised-button class="submit-button" type="button" [disabled]="loading" (click)="onSubmit()">
+      {{ loading ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear usuario' }}
+    </button>
+  </mat-dialog-actions>
+
+  <mat-dialog-actions align="end" class="dialog-actions" *ngIf="createdUser">
+    <button mat-raised-button class="submit-button" type="button" (click)="closeCreatedUser()">
+      Listo
+    </button>
+  </mat-dialog-actions>
+</div>

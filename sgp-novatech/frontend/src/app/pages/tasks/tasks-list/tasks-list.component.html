@@ -1,0 +1,327 @@
+<div class="page-shell">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mis tareas</h1>
+      <p class="page-sub">{{ getTotalLabel() }}</p>
+    </div>
+
+    <button
+      *ngIf="canCreateTasks()"
+      mat-raised-button
+      class="primary-button"
+      (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Nueva tarea
+    </button>
+  </div>
+
+  <section class="filters-card surface-card">
+    <div class="toolbar-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar tareas...</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [(ngModel)]="filters.search" (ngModelChange)="onSearchChange()" />
+      </mat-form-field>
+
+      <div class="toolbar-actions">
+        <button type="button" class="soft-action-button" (click)="toggleFilters()">
+          <mat-icon>{{ filtersExpanded ? 'filter_alt_off' : 'filter_alt' }}</mat-icon>
+          {{ filtersExpanded ? 'Ocultar filtros' : 'Filtros' }}
+          <span class="action-count" *ngIf="activeFiltersCount > 0">{{ activeFiltersCount }}</span>
+        </button>
+
+        <button type="button" class="soft-action-button" (click)="clearFilters()" *ngIf="hasActiveFilters">
+          <mat-icon>restart_alt</mat-icon>
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+
+    <div class="active-filters" *ngIf="hasActiveFilters">
+      <span class="active-filters-label">Filtros activos:</span>
+      <span class="active-chip" *ngIf="filters.search?.trim()">Busqueda</span>
+      <span class="active-chip" *ngIf="filters.status">{{ filters.status === 'EN_PROGRESO' ? 'En progreso' : (filters.status === 'EN_REVISION' ? 'En revision' : (filters.status === 'COMPLETADA' ? 'Completada' : 'Pendiente')) }}</span>
+      <span class="active-chip" *ngIf="filters.priority">{{ filters.priority === 'ALTA' ? 'Alta' : (filters.priority === 'MEDIA' ? 'Media' : 'Baja') }}</span>
+      <span class="active-chip" *ngIf="filters.projectId">Proyecto</span>
+      <span class="active-chip" *ngIf="filters.assigneeId">Responsable</span>
+      <span class="active-chip" *ngIf="filters.dueRange !== 'TODAS'">{{ filters.dueRange === 'HOY' ? 'Hoy' : (filters.dueRange === 'ESTA_SEMANA' ? 'Esta semana' : 'Vencidas') }}</span>
+    </div>
+
+    <div class="filters-panel" *ngIf="filtersExpanded">
+      <div class="filters-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="filters.status" (selectionChange)="onFiltersChange()">
+            <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prioridad</mat-label>
+          <mat-select [(ngModel)]="filters.priority" (selectionChange)="onFiltersChange()">
+            <mat-option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Proyecto</mat-label>
+          <mat-select [(ngModel)]="filters.projectId" (selectionChange)="onFiltersChange()">
+            <mat-option value="">Todos los proyectos</mat-option>
+            <mat-option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="canFilterByAssignee()">
+          <mat-label>Responsable</mat-label>
+          <mat-select [(ngModel)]="filters.assigneeId" (selectionChange)="onFiltersChange()">
+            <mat-option value="">Todos los responsables</mat-option>
+            <mat-option *ngFor="let assignee of assigneeOptions" [value]="assignee.id">
+              {{ assignee.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Vencimiento</mat-label>
+          <mat-select [(ngModel)]="filters.dueRange" (selectionChange)="onFiltersChange()">
+            <mat-option *ngFor="let option of dueRangeOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-grid" *ngIf="!loading">
+    <article class="stat-card surface-card">
+      <span>Pendientes</span>
+      <strong>{{ getStatusCount('PENDIENTE') }}</strong>
+    </article>
+    <article class="stat-card surface-card">
+      <span>En progreso</span>
+      <strong>{{ getStatusCount('EN_PROGRESO') }}</strong>
+    </article>
+    <article class="stat-card surface-card">
+      <span>En revision</span>
+      <strong>{{ getStatusCount('EN_REVISION') }}</strong>
+    </article>
+    <article class="stat-card surface-card">
+      <span>Completadas</span>
+      <strong>{{ getStatusCount('COMPLETADA') }}</strong>
+    </article>
+  </section>
+
+  <div
+    *ngIf="!loading && getTasksAlert() as alert"
+    class="alert-banner"
+    [ngClass]="'alert-' + alert.tone">
+    <mat-icon>{{ alert.tone === 'danger' ? 'warning' : 'schedule' }}</mat-icon>
+    <span>{{ alert.text }}</span>
+  </div>
+
+  <div class="loading-box surface-card" *ngIf="loading">
+    <mat-spinner diameter="34"></mat-spinner>
+    <p>Cargando tareas...</p>
+  </div>
+
+  <section class="content-grid" *ngIf="!loading">
+    <div class="tasks-column">
+      <article
+        *ngFor="let task of tasks"
+        class="task-row surface-card"
+        [class.selected]="selectedTask?.id === task.id"
+        [class.completed]="task.status === 'COMPLETADA'"
+        (click)="selectTask(task)">
+        <div class="task-row-top">
+          <div class="task-copy">
+            <span class="task-code">{{ getTaskCode(task) }}</span>
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.description || 'Sin descripcion adicional.' }}</p>
+          </div>
+          <span class="priority-pill" [ngClass]="getPriorityClass(task.priority)">
+            {{ getPriorityLabel(task.priority) }}
+          </span>
+        </div>
+
+        <div class="task-row-bottom">
+          <div class="status-meta">
+            <span class="status-pill" [ngClass]="'status-' + task.status.toLowerCase()">
+              {{ getStatusLabel(task.status) }}
+            </span>
+            <span class="date-text">{{ task.deadline | date:'dd MMM yyyy' }}</span>
+          </div>
+
+          <div class="row-right">
+            <span class="project-chip">{{ task.project?.name || 'Sin proyecto' }}</span>
+            <span class="comment-chip">
+              <mat-icon>chat_bubble_outline</mat-icon>
+              {{ getTaskCommentsCount(task) }}
+            </span>
+            <span class="avatar-circle small" *ngIf="task.assignee">{{ task.assignee.name.charAt(0) }}</span>
+          </div>
+        </div>
+      </article>
+
+      <div class="empty-box surface-card" *ngIf="tasks.length === 0">
+        No hay tareas que coincidan con los filtros.
+      </div>
+    </div>
+
+    <aside class="detail-panel surface-card" *ngIf="selectedTask">
+      <div class="detail-code">{{ getTaskCode(selectedTask) }}</div>
+      <h2>{{ selectedTask.title }}</h2>
+      <p class="detail-description">{{ selectedTask.description || 'Sin descripcion adicional.' }}</p>
+
+      <div class="detail-grid">
+        <div class="detail-row">
+          <span>Estado</span>
+          <strong>{{ getStatusLabel(selectedTask.status) }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Prioridad</span>
+          <strong>{{ getPriorityLabel(selectedTask.priority) }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Asignado a</span>
+          <strong>{{ selectedTask.assignee?.name || 'Sin asignar' }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Proyecto</span>
+          <strong>{{ selectedTask.project?.name || 'Sin proyecto' }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Fecha limite</span>
+          <strong>{{ selectedTask.deadline | date:'dd/MM/yyyy' }}</strong>
+        </div>
+      </div>
+
+      <div class="detail-actions" *ngIf="canManageSelectedTask()">
+        <button
+          mat-stroked-button
+          class="action-button"
+          (click)="openEditDialog()">
+          <mat-icon>edit</mat-icon>
+          Editar tarea
+        </button>
+
+        <button
+          mat-stroked-button
+          class="action-button danger-button"
+          (click)="deleteSelectedTask()"
+          [disabled]="deletingTask">
+          <mat-icon>{{ deletingTask ? 'hourglass_top' : 'delete' }}</mat-icon>
+          {{ deletingTask ? 'Eliminando...' : 'Eliminar tarea' }}
+        </button>
+      </div>
+
+      <button
+        *ngIf="canAdvanceTask() && getNextStatusLabel()"
+        mat-raised-button
+        class="advance-button"
+        (click)="advanceTask()">
+        <mat-icon>arrow_upward</mat-icon>
+        {{ getNextStatusLabel() }}
+      </button>
+
+      <button
+        *ngIf="selectedTask.project?.id"
+        mat-stroked-button
+        class="board-button"
+        (click)="openProjectBoard()">
+        <mat-icon>view_kanban</mat-icon>
+        Ver tablero del proyecto
+      </button>
+
+      <div class="comments-block">
+        <div class="comments-header">
+          <div>
+            <h3>Comentarios</h3>
+            <p>Historial de seguimiento en orden cronologico</p>
+          </div>
+          <span>{{ comments.length }}</span>
+        </div>
+
+        <div class="comments-loading" *ngIf="commentsLoading">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+
+        <div class="comments-list" *ngIf="!commentsLoading && comments.length > 0">
+          <article class="comment-item" *ngFor="let comment of comments" [class.own-comment]="isOwnComment(comment)">
+            <div class="comment-avatar">
+              {{ getCommentInitials(comment.author.name) }}
+            </div>
+            <div class="comment-body">
+              <div class="comment-meta">
+                <div>
+                  <strong>{{ comment.author.name }}</strong>
+                  <small>{{ comment.author.role }}</small>
+                </div>
+                <div class="comment-time">
+                  <small>{{ formatCommentTimestamp(comment.createdAt) }}</small>
+                  <span>{{ getRelativeTime(comment.createdAt) }}</span>
+                </div>
+              </div>
+              <ng-container *ngIf="!isEditingComment(comment); else editCommentBlock">
+                <p>{{ comment.content }}</p>
+              </ng-container>
+              <ng-template #editCommentBlock>
+                <textarea
+                  class="comment-edit-input"
+                  [(ngModel)]="editCommentDraft"
+                  rows="3"
+                  maxlength="500"></textarea>
+              </ng-template>
+
+              <div class="comment-actions" *ngIf="isOwnComment(comment) && !isDeletedComment(comment)">
+                <ng-container *ngIf="!isEditingComment(comment); else editingActions">
+                  <button type="button" class="comment-link" (click)="startEditComment(comment)">Editar</button>
+                  <button
+                    type="button"
+                    class="comment-link danger"
+                    (click)="deleteComment(comment)"
+                    [disabled]="deletingCommentId === comment.id">
+                    {{ deletingCommentId === comment.id ? 'Eliminando...' : 'Eliminar' }}
+                  </button>
+                </ng-container>
+                <ng-template #editingActions>
+                  <span class="comment-counter">{{ editCommentDraft.length }}/500</span>
+                  <button
+                    type="button"
+                    class="comment-link"
+                    (click)="saveComment(comment)"
+                    [disabled]="updatingCommentId === comment.id || !editCommentDraft.trim()">
+                    {{ updatingCommentId === comment.id ? 'Guardando...' : 'Guardar' }}
+                  </button>
+                  <button type="button" class="comment-link muted" (click)="cancelEditComment()">Cancelar</button>
+                </ng-template>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <p class="empty-comments" *ngIf="!commentsLoading && comments.length === 0">
+          Todavia no hay comentarios en esta tarea.
+        </p>
+
+        <div class="comment-composer">
+          <textarea
+            [(ngModel)]="commentDraft"
+            rows="3"
+            maxlength="500"
+            placeholder="Escribe un comentario para documentar avance, bloqueo o decision..."></textarea>
+          <button
+            type="button"
+            class="send-comment"
+            (click)="addComment()"
+            [disabled]="!commentDraft.trim() || commentSaving">
+            <mat-icon>{{ commentSaving ? 'hourglass_top' : 'send' }}</mat-icon>
+            <span>{{ commentSaving ? 'Publicando...' : 'Publicar comentario' }}</span>
+          </button>
+        </div>
+        <div class="composer-meta">
+          <span class="comment-counter">{{ commentDraft.length }}/500</span>
+        </div>
+        <p class="composer-hint">Los comentarios quedan visibles como bitacora de la tarea.</p>
+      </div>
+    </aside>
+  </section>
+</div>

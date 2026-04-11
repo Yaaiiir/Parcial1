@@ -1,0 +1,52 @@
+.forbidden-shell {
+  min-height: calc(100vh - 96px);
+  display: grid;
+  place-items: center;
+}
+
+.forbidden-card {
+  width: min(100%, 560px);
+  padding: 36px 32px;
+  text-align: center;
+}
+
+.forbidden-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  height: 38px;
+  margin-bottom: 18px;
+  border-radius: 999px;
+  background: rgba(214, 58, 58, 0.12);
+  color: var(--nt-danger);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.forbidden-card h1 {
+  margin: 0;
+  color: var(--nt-primary);
+  font-size: 32px;
+}
+
+.forbidden-card p {
+  margin: 14px 0 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.forbidden-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.primary-button {
+  height: 48px;
+  padding: 0 20px;
+  background: linear-gradient(135deg, var(--nt-primary), #223777) !important;
+  color: #fff !important;
+  font-weight: 600;
+}

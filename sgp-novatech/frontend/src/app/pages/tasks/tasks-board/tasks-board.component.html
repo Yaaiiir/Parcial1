@@ -1,0 +1,260 @@
+<div class="page-shell">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Tablero de tareas</h1>
+      <p class="page-sub">Organiza el trabajo del proyecto en un flujo Kanban.</p>
+    </div>
+
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="project-select">
+        <mat-label>Proyecto</mat-label>
+        <mat-select [(ngModel)]="selectedProjectId" (selectionChange)="onProjectChange()">
+          <mat-option *ngFor="let project of projects" [value]="project.id">
+            {{ project.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        *ngIf="canManageTasks()"
+        mat-raised-button
+        class="primary-button"
+        (click)="openCreateDialog()"
+        [disabled]="!selectedProjectId">
+        <mat-icon>add</mat-icon>
+        Nueva tarea
+      </button>
+    </div>
+  </div>
+
+  <div class="project-summary surface-card" *ngIf="selectedProject">
+    <div>
+      <h2>{{ selectedProject.name }}</h2>
+      <p>Lider: {{ selectedProject.leader.name }} | {{ selectedProject.members.length }} miembros</p>
+    </div>
+    <span class="status-pill" [ngClass]="'status-' + selectedProject.status.toLowerCase()">
+      {{ selectedProject.status === 'ACTIVO' ? 'Activo' : selectedProject.status === 'PAUSADO' ? 'Pausado' : 'Cerrado' }}
+    </span>
+  </div>
+
+  <div class="loading-box surface-card" *ngIf="loading">
+    <mat-spinner diameter="34"></mat-spinner>
+    <p>Cargando tablero...</p>
+  </div>
+
+  <div
+    *ngIf="!loading && getBoardAlert() as alert"
+    class="alert-banner"
+    [ngClass]="'alert-' + alert.tone">
+    <mat-icon>{{ alert.tone === 'danger' ? 'warning' : alert.tone === 'warning' ? 'schedule' : 'info' }}</mat-icon>
+    <span>{{ alert.text }}</span>
+  </div>
+
+  <div class="board-layout" *ngIf="!loading">
+    <div class="board-grid">
+    <section
+      *ngFor="let column of columns"
+      class="board-column surface-card"
+      [ngClass]="'tone-' + column.tone">
+      <header class="column-header">
+        <div class="column-title">
+          <span class="column-dot"></span>
+          <h3>{{ column.title }}</h3>
+          <span>{{ column.tasks.length }}</span>
+        </div>
+      </header>
+
+      <div
+        cdkDropList
+        [cdkDropListData]="column.tasks"
+        [cdkDropListConnectedTo]="getConnectedLists(column.id)"
+        [id]="column.id"
+        class="task-list"
+        (cdkDropListDropped)="drop($event, column.id)">
+        <article
+          class="task-card"
+          *ngFor="let task of column.tasks"
+          cdkDrag
+          [cdkDragDisabled]="!canDragTask(task)"
+          [class.selected]="selectedTask?.id === task.id"
+          (click)="selectTask(task)">
+          <div class="task-card-top">
+            <h4>{{ task.title }}</h4>
+            <div class="task-card-actions">
+              <span class="priority-pill" [ngClass]="getPriorityClass(task)">
+                {{ task.priority }}
+              </span>
+              <button
+                *ngIf="canManageTasks()"
+                type="button"
+                class="icon-action"
+                (click)="openEditDialog(task)"
+                aria-label="Editar tarea">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <p *ngIf="task.description">{{ task.description }}</p>
+
+          <div class="task-meta">
+            <span [class.urgent]="isUrgent(task)">{{ task.deadline | date:'dd MMM yyyy' }}</span>
+            <div class="task-meta-right">
+              <span class="comment-chip">
+                <mat-icon>chat_bubble_outline</mat-icon>
+                {{ getTaskCommentsCount(task) }}
+              </span>
+              <span class="avatar-circle small" *ngIf="task.assignee">{{ task.assignee.name.charAt(0) }}</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="empty-slot" *ngIf="column.tasks.length === 0">
+          Sin tareas en esta columna
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <aside class="task-detail surface-card" *ngIf="selectedTask">
+      <div class="detail-code">{{ getTaskCode(selectedTask) }}</div>
+      <h2>{{ selectedTask.title }}</h2>
+      <p class="detail-description">
+        {{ selectedTask.description || 'Sin descripcion adicional.' }}
+      </p>
+
+      <div class="detail-grid">
+        <div class="detail-row">
+          <span>Estado</span>
+          <strong>{{ selectedTask.status }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Prioridad</span>
+          <strong>{{ selectedTask.priority }}</strong>
+        </div>
+        <div class="detail-row" *ngIf="selectedTask.assignee">
+          <span>Asignado a</span>
+          <strong>{{ selectedTask.assignee.name }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Proyecto</span>
+          <strong>{{ selectedProject?.name }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Fecha limite</span>
+          <strong>{{ selectedTask.deadline | date:'dd/MM/yyyy' }}</strong>
+        </div>
+      </div>
+
+      <div class="detail-actions" *ngIf="canManageTasks()">
+        <button
+          mat-stroked-button
+          class="action-button"
+          (click)="openEditDialog(selectedTask)">
+          <mat-icon>edit</mat-icon>
+          Editar tarea
+        </button>
+        <button
+          mat-stroked-button
+          class="action-button danger-button"
+          (click)="deleteSelectedTask()"
+          [disabled]="deletingTask">
+          <mat-icon>{{ deletingTask ? 'hourglass_top' : 'delete' }}</mat-icon>
+          {{ deletingTask ? 'Eliminando...' : 'Eliminar tarea' }}
+        </button>
+      </div>
+
+      <div class="comments-block">
+        <div class="comments-header">
+          <div>
+            <h3>Comentarios</h3>
+            <p>Bitacora visible del progreso de la tarea</p>
+          </div>
+          <span>{{ comments.length }}</span>
+        </div>
+
+        <div class="comments-loading" *ngIf="commentsLoading">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+
+        <div class="comments-list" *ngIf="!commentsLoading && comments.length > 0">
+          <article class="comment-item" *ngFor="let comment of comments" [class.own-comment]="isOwnComment(comment)">
+            <div class="comment-avatar">
+              {{ getCommentInitials(comment.author.name) }}
+            </div>
+            <div class="comment-content">
+              <div class="comment-meta">
+                <div>
+                  <strong>{{ comment.author.name }}</strong>
+                  <small>{{ comment.author.role }}</small>
+                </div>
+                <div class="comment-time">
+                  <small>{{ formatCommentTimestamp(comment.createdAt) }}</small>
+                  <span>{{ getRelativeTime(comment.createdAt) }}</span>
+                </div>
+              </div>
+              <ng-container *ngIf="!isEditingComment(comment); else editCommentBlock">
+                <p>{{ comment.content }}</p>
+              </ng-container>
+              <ng-template #editCommentBlock>
+                <textarea
+                  class="comment-edit-input"
+                  [(ngModel)]="editCommentDraft"
+                  rows="3"
+                  maxlength="500"></textarea>
+              </ng-template>
+
+              <div class="comment-actions" *ngIf="isOwnComment(comment)">
+                <ng-container *ngIf="!isEditingComment(comment); else editingActions">
+                  <button type="button" class="comment-link" (click)="startEditComment(comment)">Editar</button>
+                  <button
+                    type="button"
+                    class="comment-link danger"
+                    (click)="deleteComment(comment)"
+                    [disabled]="deletingCommentId === comment.id">
+                    {{ deletingCommentId === comment.id ? 'Eliminando...' : 'Eliminar' }}
+                  </button>
+                </ng-container>
+                <ng-template #editingActions>
+                  <span class="comment-counter">{{ editCommentDraft.length }}/500</span>
+                  <button
+                    type="button"
+                    class="comment-link"
+                    (click)="saveComment(comment)"
+                    [disabled]="updatingCommentId === comment.id || !editCommentDraft.trim()">
+                    {{ updatingCommentId === comment.id ? 'Guardando...' : 'Guardar' }}
+                  </button>
+                  <button type="button" class="comment-link muted" (click)="cancelEditComment()">Cancelar</button>
+                </ng-template>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <p class="comments-empty" *ngIf="!commentsLoading && comments.length === 0">
+          Todavia no hay comentarios en esta tarea.
+        </p>
+
+        <div class="comment-composer">
+          <textarea
+            [(ngModel)]="commentDraft"
+            rows="3"
+            maxlength="500"
+            placeholder="Escribe un comentario para dejar evidencia o contexto de la tarea..."></textarea>
+          <button
+            type="button"
+            class="send-comment"
+            (click)="addComment()"
+            [disabled]="!commentDraft.trim() || commentSaving">
+            <mat-icon>{{ commentSaving ? 'hourglass_top' : 'send' }}</mat-icon>
+            <span>{{ commentSaving ? 'Publicando...' : 'Publicar comentario' }}</span>
+          </button>
+        </div>
+        <div class="composer-meta">
+          <span class="comment-counter">{{ commentDraft.length }}/500</span>
+        </div>
+        <p class="composer-hint">Los comentarios se muestran en orden cronologico y cada usuario puede editar o eliminar solo los suyos.</p>
+      </div>
+    </aside>
+  </div>
+</div>

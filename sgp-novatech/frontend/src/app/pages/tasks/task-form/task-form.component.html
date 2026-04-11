@@ -1,0 +1,63 @@
+<div class="dialog-shell">
+  <h2 mat-dialog-title>{{ data.task ? 'Editar tarea' : 'Nueva tarea' }}</h2>
+  <p class="dialog-subtitle">
+    {{ data.task ? 'Actualiza la informacion principal de la tarea.' : 'Crea una tarea y asignala a un miembro del proyecto.' }}
+  </p>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" class="form-grid">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Titulo</mat-label>
+        <input matInput formControlName="title" placeholder="Ej: Integrar tablero Kanban" />
+        <mat-error *ngIf="form.get('title')?.hasError('required')">El titulo es requerido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descripcion</mat-label>
+        <textarea matInput rows="4" formControlName="description" placeholder="Describe el objetivo de la tarea"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Etiquetas opcionales</mat-label>
+        <input matInput formControlName="labels" placeholder="Ej: backend, urgente, cliente" />
+        <mat-hint>Separalas por coma para organizarlas mejor.</mat-hint>
+      </mat-form-field>
+
+      <div class="two-col">
+        <mat-form-field appearance="outline">
+          <mat-label>Prioridad</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option value="ALTA">Alta</mat-option>
+            <mat-option value="MEDIA">Media</mat-option>
+            <mat-option value="BAJA">Baja</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha limite</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="deadline" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Responsable</mat-label>
+        <mat-select formControlName="assigneeId">
+          <mat-option value="">Sin asignar</mat-option>
+          <mat-option *ngFor="let member of data.members" [value]="member.id">
+            {{ member.name }} | {{ member.role }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button class="ghost-button" (click)="onCancel()">Cancelar</button>
+    <button mat-raised-button class="submit-button" (click)="onSubmit()" [disabled]="form.invalid || loading">
+      <mat-spinner diameter="18" *ngIf="loading"></mat-spinner>
+      <span *ngIf="!loading">{{ data.task ? 'Guardar cambios' : 'Crear tarea' }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

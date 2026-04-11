@@ -1,0 +1,151 @@
+<div class="page-shell dashboard-shell">
+  <header class="hero-card surface-card">
+    <div class="hero-copy">
+      <span class="section-tag">Panel principal</span>
+      <h1>Hola, {{ firstName }}</h1>
+      <p>{{ todayLabel }} | NovaTech Consulting</p>
+    </div>
+
+    <div class="hero-status" [ngClass]="'tone-' + portfolioHealthTone">
+      <span class="hero-status-icon">
+        {{ portfolioHealthTone === 'critical' ? 'warning' : portfolioHealthTone === 'warning' ? 'schedule' : 'verified' }}
+      </span>
+      <div>
+        <strong>{{ portfolioHealthLabel }}</strong>
+        <span>{{ overdueTasks }} tarea(s) vencida(s) y {{ expiringProjectsCount }} proyecto(s) proximos a vencer</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="kpi-grid">
+    <article class="kpi-card surface-card">
+      <div>
+        <span class="kpi-label">Proyectos activos</span>
+        <strong class="kpi-value">{{ activeProjectsCount }}</strong>
+      </div>
+      <span class="kpi-icon blue">folder_open</span>
+    </article>
+
+    <article class="kpi-card surface-card">
+      <div>
+        <span class="kpi-label">Tareas completadas</span>
+        <strong class="kpi-value">{{ completedTasks }}</strong>
+      </div>
+      <span class="kpi-icon green">done_all</span>
+    </article>
+
+    <article class="kpi-card surface-card">
+      <div>
+        <span class="kpi-label">Tareas pendientes</span>
+        <strong class="kpi-value">{{ pendingTasks }}</strong>
+      </div>
+      <span class="kpi-icon blue">schedule</span>
+    </article>
+
+    <article class="kpi-card surface-card">
+      <div>
+        <span class="kpi-label">Tareas vencidas</span>
+        <strong class="kpi-value danger">{{ overdueTasks }}</strong>
+      </div>
+      <span class="kpi-icon red">priority_high</span>
+    </article>
+  </section>
+
+  <section class="executive-strip surface-card">
+    <div class="executive-copy">
+      <span class="section-tag">Resumen ejecutivo del portafolio</span>
+      <h2>{{ portfolioHealthLabel }}</h2>
+      <p>Vista consolidada de avance, carga operativa y alertas de vencimiento para los proyectos con mayor prioridad.</p>
+    </div>
+
+    <div class="executive-metrics">
+      <div class="executive-metric">
+        <span>Portafolio total</span>
+        <strong>{{ projects.length }}</strong>
+      </div>
+
+      <div class="executive-metric">
+        <span>Por vencer esta semana</span>
+        <strong>{{ expiringProjectsCount }}</strong>
+      </div>
+
+      <div class="health-pill" [ngClass]="'tone-' + portfolioHealthTone">
+        {{ portfolioHealthTone === 'critical' ? 'Alerta alta' : portfolioHealthTone === 'warning' ? 'Seguimiento' : 'Saludable' }}
+      </div>
+    </div>
+  </section>
+
+  <section class="dashboard-grid">
+    <article class="panel surface-card">
+      <div class="panel-header">
+        <h2>Portafolio priorizado</h2>
+        <button mat-button type="button" (click)="goToProjects()">Ver todos</button>
+      </div>
+
+      <div class="executive-project-grid" *ngIf="executiveProjects.length > 0; else emptyProjectsState">
+        <button type="button" class="executive-project-card" *ngFor="let project of executiveProjects" (click)="goToProject(project.id)">
+          <div class="card-top">
+            <div>
+              <span class="project-code">{{ project.code }}</span>
+              <h3>{{ project.name }}</h3>
+              <p>Lider: {{ project.leader }}</p>
+            </div>
+            <span class="status-pill" [ngClass]="'status-' + project.status.toLowerCase()">{{ statusLabel(project.status) }}</span>
+          </div>
+
+          <div class="card-alert" [ngClass]="'tone-' + project.alertTone">
+            <strong>{{ project.alertLabel }}</strong>
+            <span>{{ project.timelineLabel }}</span>
+          </div>
+
+          <div class="project-meta-grid">
+            <div>
+              <span>Fecha limite</span>
+              <strong>{{ project.deadlineLabel }}</strong>
+            </div>
+            <div>
+              <span>Tareas</span>
+              <strong>{{ project.completedTasks }}/{{ project.totalTasks }}</strong>
+            </div>
+          </div>
+
+          <div class="progress-meta">
+            <span>Avance</span>
+            <strong>{{ project.progress }}%</strong>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="project.progress"></div>
+          </div>
+        </button>
+      </div>
+
+      <ng-template #emptyProjectsState>
+        <div class="empty-panel">
+          No hay proyectos disponibles para mostrar en el resumen ejecutivo.
+        </div>
+      </ng-template>
+    </article>
+
+    <article class="panel surface-card">
+      <div class="panel-header">
+        <h2>Mis tareas proximas</h2>
+        <button mat-button type="button" (click)="goToTasks()">Ver todas</button>
+      </div>
+
+      <div class="task-list">
+        <div class="task-row" *ngFor="let task of upcomingTasks">
+          <span class="priority-dot" [ngClass]="'priority-' + task.priority"></span>
+          <div class="task-copy">
+            <strong>{{ task.name }}</strong>
+            <p>{{ task.project }} | {{ task.due }}</p>
+          </div>
+        </div>
+
+        <div class="empty-panel" *ngIf="upcomingTasks.length === 0">
+          No hay tareas proximas para este usuario.
+        </div>
+      </div>
+    </article>
+  </section>
+</div>

@@ -1,0 +1,40 @@
+<div class="login-shell">
+  <div class="login-card surface-card">
+    <div class="logo-stack">
+      <img class="brand-mark" src="/novatech-logo.svg" alt="NovaTech SGP" />
+      <h1>NovaTech SGP</h1>
+      <p>Sistema de Gestion de Proyectos</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="session-notice" *ngIf="sessionNotice">{{ sessionNotice }}</div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo electronico*</mat-label>
+        <input matInput formControlName="email" type="email" placeholder="correo@novatech.com" />
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">El correo es requerido</mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('email')">Correo invalido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contrasena*</mat-label>
+        <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" />
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">La contrasena es requerida</mat-error>
+      </mat-form-field>
+
+      <div class="error-msg" *ngIf="error">{{ error }}</div>
+
+      <button
+        mat-raised-button
+        type="submit"
+        class="full-width submit-btn"
+        [disabled]="loading || loginForm.invalid">
+        <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+        <span *ngIf="!loading">Iniciar sesion</span>
+      </button>
+    </form>
+  </div>
+</div>

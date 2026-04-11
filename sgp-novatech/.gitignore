@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.db
+dist/
+.angular/
+prisma/dev.db
+coverage/
+*.log
