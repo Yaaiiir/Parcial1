@@ -1,0 +1,72 @@
+<ion-content>
+  <div class="header-container">
+    <ion-toolbar color="transparent" lines="none">
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/inicio-doctor" color="light"></ion-back-button>
+      </ion-buttons>
+    </ion-toolbar>
+    <div class="ion-padding-horizontal">
+      <h1>Panel de Análisis</h1>
+      <p>Estadísticas y objetivos del día</p>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="icon-box blue"><ion-icon name="people-outline"></ion-icon></div>
+        <span class="value">{{ totalPacientes }}</span>
+        <span class="label">Pacientes</span>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box purple"><ion-icon name="time-outline"></ion-icon></div>
+        <span class="value">{{ totalCitas }}</span>
+        <span class="label">Citas</span>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <h3>🎯 Objetivos del Día</h3>
+
+      <ion-item lines="none" class="input-item">
+        <ion-input
+          [(ngModel)]="nuevaMetaTitulo"
+          placeholder="Escribir nueva meta..."
+          (keyup.enter)="agregarMeta()">
+        </ion-input>
+        <ion-button slot="end" fill="clear" (click)="agregarMeta()">
+          <ion-icon name="add-circle" color="primary" style="font-size: 28px;"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-list lines="none" class="meta-list">
+        <ion-item-sliding *ngFor="let meta of metas">
+          <ion-item class="meta-item">
+            <ion-checkbox
+              slot="start"
+              [checked]="meta.completada"
+              (ionChange)="toggleMeta(meta)">
+            </ion-checkbox>
+            <ion-label [style.opacity]="meta.completada ? '0.5' : '1'">
+              <h2 [style.text-decoration]="meta.completada ? 'line-through' : 'none'">
+                {{ meta.titulo }}
+              </h2>
+              <p>{{ meta.fecha | date:'shortTime' }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="borrarMeta(meta.id)" class="delete-button">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+
+      <div *ngIf="metas.length === 0" style="text-align: center; padding: 30px;">
+        <ion-icon name="clipboard-outline" style="font-size: 3rem; color: #d0d7e1;"></ion-icon>
+        <p style="color: #99a; font-size: 0.9rem; margin-top: 10px;">No hay metas para hoy.</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

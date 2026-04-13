@@ -1,0 +1,114 @@
+<ion-content>
+  <div class="header-container">
+    <ion-toolbar color="transparent" lines="none">
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/inicio-doctor" color="light"></ion-back-button>
+      </ion-buttons>
+      <ion-title color="light">Recetario Digital</ion-title>
+    </ion-toolbar>
+
+    <div class="header-content ion-padding-horizontal">
+      <div class="text-group">
+        <h1>Mis Recetas</h1>
+        <p>{{ recetas.length }} documentos emitidos</p>
+      </div>
+      <div class="add-button-circle" (click)="abrirModalReceta()">
+        <ion-icon name="add"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="section-title">
+      <h2>Historial de Prescripciones</h2>
+    </div>
+
+    <div class="recetas-grid">
+      <div *ngIf="recetas.length === 0" class="empty-state">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <p>No hay recetas registradas</p>
+      </div>
+
+      <ion-card mode="ios" *ngFor="let r of recetas" class="prescription-card">
+        <div class="card-top">
+          <div class="med-info">
+            <div class="icon-box">
+              <ion-icon name="medical"></ion-icon>
+            </div>
+            <div class="details">
+              <h3>{{ r.medicamento }}</h3>
+              <p><ion-icon name="person-circle-outline"></ion-icon> {{ r.usuario.nombre }} {{ r.usuario.apellido }}</p>
+            </div>
+          </div>
+          <ion-button fill="clear" color="danger" (click)="borrarReceta(r.id)" class="btn-delete">
+            <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="card-body">
+          <div class="instruction-label">INDICACIONES</div>
+          <p class="instruction-text">{{ r.indicaciones }}</p>
+        </div>
+
+        <div class="card-footer">
+          <span class="date-tag">
+            <ion-icon name="calendar-clear-outline"></ion-icon>
+            {{ r.fecha | date:'dd MMM, yyyy' }}
+          </span>
+        </div>
+      </ion-card>
+    </div>
+  </div>
+
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false" mode="ios" class="custom-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Nueva Prescripción</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isModalOpen = false" color="medium">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding modal-bg">
+        <div class="form-wrapper">
+
+          <div class="input-group">
+            <label>Paciente</label>
+            <div class="custom-field">
+              <ion-icon name="person-outline"></ion-icon>
+              <ion-select [(ngModel)]="nuevaReceta.pacienteId" placeholder="Seleccionar paciente" interface="action-sheet">
+                <ion-select-option *ngFor="let p of pacientes" [value]="p.id">
+                  {{ p.nombre }} {{ p.apellido }}
+                </ion-select-option>
+              </ion-select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Medicamento</label>
+            <div class="custom-field">
+              <ion-icon name="medkit-outline"></ion-icon>
+              <ion-input [(ngModel)]="nuevaReceta.medicamento" placeholder="Nombre y miligramos"></ion-input>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Dosis e Instrucciones</label>
+            <div class="custom-field textarea-field">
+              <ion-icon name="reader-outline"></ion-icon>
+              <ion-textarea [(ngModel)]="nuevaReceta.indicaciones" rows="4" placeholder="Frecuencia, duración del tratamiento..."></ion-textarea>
+            </div>
+          </div>
+
+          <ion-button expand="block" (click)="guardarReceta()" class="btn-confirm"
+                      [disabled]="!nuevaReceta.pacienteId || !nuevaReceta.medicamento">
+            <ion-icon slot="start" name="checkmark-done-circle"></ion-icon>
+            Generar Receta
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -1,0 +1,207 @@
+// --- ESTILOS BASE DEL DASHBOARD ---
+ion-content {
+  --background: #f8faff;
+}
+
+.header-blue {
+  background: #1d61ff;
+  height: 180px;
+  padding: 40px 24px;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  color: white;
+
+  .welcome-section {
+    h1 { font-size: 1.8rem; font-weight: 800; margin: 0; color: white !important; }
+    p { font-size: 1rem; opacity: 0.9; margin-top: 5px; font-weight: 500; color: white !important; }
+  }
+}
+
+.dashboard-container {
+  padding: 0 20px 40px;
+  margin-top: -60px;
+}
+
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin-bottom: 30px;
+
+  .access-card {
+    background: white;
+    padding: 18px 10px;
+    border-radius: 22px;
+    text-align: center;
+    transition: transform 0.2s;
+    cursor: pointer;
+    &:active { transform: scale(0.95); }
+
+    .icon-bg {
+      width: 48px; height: 48px;
+      border-radius: 16px;
+      margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; color: white;
+
+      &.blue { background: #1d61ff; box-shadow: 0 8px 15px rgba(29, 97, 255, 0.2); }
+      &.green { background: #00c853; box-shadow: 0 8px 15px rgba(0, 200, 83, 0.2); }
+      &.orange { background: #ff9100; box-shadow: 0 8px 15px rgba(255, 145, 0, 0.2); }
+      &.purple { background: #9c27b0; box-shadow: 0 8px 15px rgba(156, 39, 176, 0.2); }
+      &.pink { background: #ff4081; box-shadow: 0 8px 15px rgba(255, 64, 129, 0.2); }
+    }
+
+    h3 { font-size: 0.85rem; font-weight: 800; margin: 0; color: #0d2145 !important; letter-spacing: -0.3px; }
+  }
+}
+
+.appointments-section {
+  .section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px;
+    h2 { font-size: 1.3rem; font-weight: 800; color: #0d2145 !important; margin: 0; }
+    ion-button { --color: #1d61ff !important; font-weight: 700; font-size: 0.85rem; }
+  }
+
+  .appointment-item {
+    background: white !important;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 22px;
+    display: flex; align-items: center;
+    position: relative;
+
+    .info {
+      flex: 1;
+      h3 { font-size: 1.1rem; font-weight: 800; color: #0d2145 !important; margin: 0; }
+      .specialty { font-size: 0.9rem; color: #7f8c8d !important; margin: 4px 0 10px; font-weight: 600; }
+      .meta {
+        display: flex; gap: 15px;
+        span { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; color: #5d718a !important; font-weight: 600;
+          ion-icon { color: #1d61ff !important; }
+        }
+      }
+    }
+
+    .type-tag {
+      padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+      display: flex; align-items: center; gap: 4px;
+      &.video { background: #e9f2ff; color: #1d61ff !important; }
+      &.presencial { background: #f0fff4; color: #00c853 !important; }
+    }
+  }
+}
+
+// --- ESTILOS DEL MODAL DE AGENDAMIENTO ---
+.modal-agendar-content {
+  --background: #ffffff;
+  .form-label { display: block; font-weight: 700; margin: 20px 0 12px; color: #0d2145 !important; font-size: 0.95rem; }
+  .type-selection {
+    display: flex; gap: 15px; margin-bottom: 10px;
+    .type-option {
+      flex: 1; border: 2px solid #f0f2f5; border-radius: 18px; padding: 20px 10px; text-align: center; transition: 0.3s;
+      ion-icon { font-size: 28px; color: #94a3b8; margin-bottom: 8px; }
+      p { margin: 0; font-size: 0.85rem; font-weight: 700; color: #64748b !important; }
+      &.active { border-color: #1d61ff; background: rgba(29, 97, 255, 0.05); ion-icon { color: #1d61ff; } p { color: #1d61ff !important; } }
+    }
+  }
+  .custom-input-box {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; padding: 5px 15px;
+    display: flex; align-items: center; min-height: 55px;
+    color: #0d2145 !important;
+
+    // Forzar color de texto en inputs de Ionic
+    ion-select, ion-datetime-button, ion-textarea, ion-input {
+      --color: #0d2145 !important;
+      color: #0d2145 !important;
+      --placeholder-color: #94a3b8 !important;
+      --placeholder-opacity: 1;
+    }
+
+    ion-icon { font-size: 20px; color: #1d61ff !important; margin-right: 10px; }
+    &.no-icon { padding: 12px 15px; }
+  }
+  .hours-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    .hour-item {
+      background: white; border: 1px solid #e2e8f0; padding: 12px 5px; border-radius: 12px; text-align: center;
+      font-size: 0.85rem; font-weight: 700; color: #64748b !important;
+      &.active { background: #1d61ff; color: white !important; border-color: #1d61ff; box-shadow: 0 5px 15px rgba(29, 97, 255, 0.3); }
+    }
+  }
+  .confirm-btn { --background: #1d61ff; --color: white !important; --border-radius: 18px; height: 58px; margin-top: 30px; font-weight: 800; }
+}
+
+// --- ESTILOS INDEPENDIENTES: LUXURY MODAL (MÉDICOS) ---
+.luxury-modal {
+  --height: 100%;
+  --width: 100%;
+}
+
+.luxury-modal-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white !important;
+
+  ion-header { z-index: 10; }
+
+  ion-content {
+    --background: white;
+    height: 100%;
+    flex: 1;
+  }
+
+  .luxury-toolbar {
+    --background: #ffffff;
+    --color: #0d2145;
+    ion-title { color: #0d2145 !important; }
+    .luxury-title { font-weight: 800; font-size: 1.2rem; color: #0d2145 !important; }
+  }
+
+  .luxury-searchbar {
+    --background: #f1f4f9;
+    --border-radius: 16px;
+    --color: #0d2145 !important;
+    --placeholder-color: #94a3b8 !important;
+    padding: 0 16px 10px;
+  }
+
+  .luxury-booking-container {
+    padding: 10px 16px;
+
+    .luxury-header {
+      margin: 15px 0 10px;
+      h2 { font-size: 1.2rem; font-weight: 800; color: #0d2145 !important; margin: 0; }
+    }
+
+    .luxury-cat-item {
+      span { color: #64748b !important; }
+      &.active span { color: white !important; }
+    }
+
+    .luxury-doctor-card {
+      background: white !important; border-radius: 24px; padding: 16px; margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+
+      .luxury-doc-details {
+        h3 { font-size: 1rem; font-weight: 800; color: #0d2145 !important; margin: 4px 0 2px; }
+        p { font-size: 0.8rem; color: #7f8c8d !important; margin: 0; font-weight: 600; }
+      }
+
+      .luxury-card-bottom {
+        .luxury-value { font-size: 1rem; font-weight: 800; color: #0d2145 !important; }
+      }
+    }
+  }
+}
+
+// --- OTROS ESTILOS ---
+.health-tip {
+  margin-top: 25px;
+  .tip-card {
+    background: #00c853; padding: 22px; border-radius: 25px; color: white !important;
+    .tip-header h3 { color: white !important; }
+    p { color: white !important; font-weight: 500; }
+  }
+}

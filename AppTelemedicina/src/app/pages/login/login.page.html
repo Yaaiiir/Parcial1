@@ -1,0 +1,61 @@
+<ion-content [fullscreen]="true" class="ion-padding-vertical">
+
+  <div class="login-wrapper">
+
+    <div class="brand-section ion-text-center">
+      <div class="logo-box">
+        <ion-icon name="heart"></ion-icon>
+      </div>
+      <h1>TeleMed</h1>
+      <p>Tu salud, siempre contigo</p>
+    </div>
+
+    <div class="login-card">
+      <h2 class="ion-no-margin">Iniciar Sesión</h2>
+
+      <div class="form-body">
+        <div class="input-group">
+          <ion-label>Correo Electrónico</ion-label>
+          <ion-item lines="none" class="custom-item">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input
+              type="email"
+              [(ngModel)]="loginData.email"
+              placeholder="tu@email.com"
+              aria-label="Correo Electrónico">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <div class="input-group">
+          <ion-label>Contraseña</ion-label>
+          <ion-item lines="none" class="custom-item">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input
+              type="password"
+              [(ngModel)]="loginData.password"
+              placeholder="••••••••"
+              aria-label="Contraseña">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <ion-button expand="block" class="main-btn" (click)="onLogin()" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Ingresar</span>
+          <ion-spinner name="dots" *ngIf="isLoading"></ion-spinner>
+        </ion-button>
+
+        <div class="ion-text-center">
+          <ion-button fill="clear" size="small" class="forgot-link">
+            ¿Olvidaste tu contraseña?
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-section ion-text-center">
+      <p>¿No tienes cuenta? <span class="register-link">Regístrate aquí</span></p>
+    </div>
+
+  </div>
+</ion-content>

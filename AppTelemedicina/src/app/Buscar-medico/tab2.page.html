@@ -1,0 +1,93 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Médicos</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Buscar médico o especialidad..."
+      class="custom-searchbar"
+      mode="md"
+      (ionInput)="buscarMedico($event)">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="booking-container">
+
+    <section class="categories">
+      <div class="section-header">
+        <h2>Especialidades</h2>
+      </div>
+      <div class="category-scroll">
+        <div class="cat-item"
+             [class.active]="categoriaSeleccionada === 'Todas'"
+             (click)="filtrarPorCategoria('Todas')">
+          <ion-icon name="apps-outline"></ion-icon>
+          <span>Todas</span>
+        </div>
+        <div class="cat-item"
+             [class.active]="categoriaSeleccionada === 'Cardio'"
+             (click)="filtrarPorCategoria('Cardio')">
+          <ion-icon name="heart-outline"></ion-icon>
+          <span>Cardiología</span>
+        </div>
+        <div class="cat-item"
+             [class.active]="categoriaSeleccionada === 'Fisio'"
+             (click)="filtrarPorCategoria('Fisio')">
+          <ion-icon name="fitness-outline"></ion-icon>
+          <span>Fisioterapia</span>
+        </div>
+        <div class="cat-item"
+             [class.active]="categoriaSeleccionada === 'Oftalmo'"
+             (click)="filtrarPorCategoria('Oftalmo')">
+          <ion-icon name="eye-outline"></ion-icon>
+          <span>Oftalmo</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="results">
+      <div class="section-header">
+        <h2>Especialistas Disponibles</h2>
+      </div>
+
+      <div class="doctor-card shadow-card" *ngFor="let doc of medicosFiltrados">
+        <div class="card-top">
+          <div class="doc-avatar-box">
+            {{ doc.nombre?.charAt(0) }}
+          </div>
+
+          <div class="doc-details">
+            <div class="rating-badge">
+              <ion-icon name="star"></ion-icon>
+              <span>{{ doc.rating || '5.0' }} ({{ doc.resenas || '0' }} reseñas)</span>
+            </div>
+            <h3>Dr(a). {{ doc.nombre }} {{ doc.apellido }}</h3>
+            <p>{{ doc.especialidad }}</p>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="price-info">
+            <span class="label">Consulta desde</span>
+            <span class="value">${{ doc.precio || 800 }} MXN</span>
+          </div>
+          <ion-button fill="solid" class="book-btn" (click)="abrirAgendar(doc)">
+            Agendar Cita
+          </ion-button>
+        </div>
+      </div>
+
+      <div class="ion-text-center ion-padding" *ngIf="medicosFiltrados.length === 0">
+        <ion-icon name="search-outline" style="font-size: 3rem; color: #ccc;"></ion-icon>
+        <p>No se encontraron médicos con esos criterios.</p>
+      </div>
+    </section>
+
+  </div>
+</ion-content>

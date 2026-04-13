@@ -1,0 +1,135 @@
+ion-content {
+  --background: #ffffff linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+}
+
+.container { padding: 10px 20px 40px; }
+
+.header-info {
+  margin: 10px 0 25px;
+  p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+}
+
+.analysis-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 22px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-main {
+    display: flex;
+    gap: 18px;
+
+    .icon-wrap {
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      font-size: 26px;
+      background: #fff7ed;
+      color: #f97316;
+      transition: 0.3s;
+
+      &.ready {
+        background: #f0fdf4;
+        color: #22c55e;
+      }
+    }
+
+    .info-wrap {
+      flex: 1;
+
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h3 {
+          margin: 0;
+          font-weight: 800;
+          font-size: 1.2rem;
+          color: #1a1a1a;
+          letter-spacing: -0.5px;
+        }
+
+        .status-icon {
+          font-size: 22px;
+          opacity: 0.8;
+        }
+      }
+
+      .lab-name {
+        margin: 4px 0 2px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #5d6d7e;
+      }
+
+      .date {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #abb2b9;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .progress-section {
+    margin-top: 20px;
+    background: #fdfaf6;
+    padding: 12px;
+    border-radius: 15px;
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+
+      span {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #f97316;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    ion-progress-bar {
+      height: 8px;
+      border-radius: 10px;
+      --progress-background: #f97316;
+      --buffer-background: #fed7aa;
+    }
+  }
+
+  .card-action {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f2f4f5;
+
+    ion-button {
+      --padding-start: 0;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      --color: var(--ion-color-primary);
+
+      ion-icon { margin-right: 8px; font-size: 18px; }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Análisis Clínicos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <div class="header-info">
+      <p>Tus resultados médicos se actualizan automáticamente en cuanto el laboratorio los libera.</p>
+    </div>
+
+    <ion-list lines="none" style="background: transparent;">
+      <div class="analysis-card" *ngFor="let estudio of estudios">
+        <div class="card-main">
+          <div class="icon-wrap" [class.ready]="estudio.estado === 'Listo'">
+            <ion-icon name="flask-outline"></ion-icon>
+          </div>
+
+          <div class="info-wrap">
+            <div class="top-row">
+              <h3>{{ estudio.nombre }}</h3>
+              <ion-icon class="status-icon"
+                [name]="estudio.estado === 'Listo' ? 'checkmark-circle' : 'time'"
+                [color]="estudio.estado === 'Listo' ? 'success' : 'warning'">
+              </ion-icon>
+            </div>
+            <p class="lab-name">{{ estudio.laboratorio }}</p>
+            <p class="date">{{ estudio.fecha }}</p>
+          </div>
+        </div>
+
+        <div class="progress-section" *ngIf="estudio.estado !== 'Listo'">
+          <div class="progress-label">
+            <span>En procesamiento</span>
+            <span>{{ (estudio.progreso * 100) }}%</span>
+          </div>
+          <ion-progress-bar [value]="estudio.progreso"></ion-progress-bar>
+        </div>
+
+        <div class="card-action" *ngIf="estudio.estado === 'Listo'">
+          <ion-button fill="clear">
+            <ion-icon slot="start" name="document-attach-outline"></ion-icon>
+            DESCARGAR RESULTADOS (PDF)
+          </ion-button>
+        </div>
+      </div>
+    </ion-list>
+  </div>
+</ion-content>

@@ -1,0 +1,88 @@
+<ion-content>
+  <div class="header-container">
+    <ion-toolbar color="transparent" lines="none">
+      <ion-buttons slot="end">
+        <ion-button (click)="logout()" color="light">
+          <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+
+    <div class="welcome-section ion-padding-horizontal">
+      <h1>Hola, Dr. {{ doctorName }}! 👋</h1>
+      <p>Buen día, ¿cómo está tu jornada hoy?</p>
+    </div>
+  </div>
+
+  <div class="main-container">
+
+    <div class="menu-grid">
+      <ion-card mode="ios" class="menu-card card-pacientes" (click)="irAPacientes()">
+        <ion-card-content class="ion-no-padding">
+          <div class="icon-wrapper">
+            <ion-icon name="people" color="light"></ion-icon>
+          </div>
+          <ion-label>Mis Pacientes</ion-label>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card mode="ios" class="menu-card card-recetas" (click)="irARecetas()">
+        <ion-card-content class="ion-no-padding">
+          <div class="icon-wrapper">
+            <ion-icon name="medical" color="light"></ion-icon>
+          </div>
+          <ion-label>Recetas</ion-label>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card mode="ios" class="menu-card card-analisis" (click)="irAAnalisis()">
+        <ion-card-content class="ion-no-padding">
+          <div class="icon-wrapper">
+            <ion-icon name="flask" color="light"></ion-icon>
+          </div>
+          <ion-label>Análisis</ion-label>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="section-header ion-padding-horizontal">
+      <h2>Próximas Citas</h2>
+      <ion-button fill="clear" color="primary" size="small">
+        VER TODAS
+      </ion-button>
+    </div>
+
+    <ion-list lines="none" class="appointments-list">
+      <div *ngIf="agenda.length === 0" class="empty-agenda ion-text-center">
+        <ion-icon name="calendar-outline" color="medium"></ion-icon>
+        <p>No tienes citas programadas para hoy.</p>
+      </div>
+
+      <ion-item-sliding *ngFor="let cita of agenda">
+        <ion-item class="appointment-item ion-no-padding">
+          <ion-label>
+            <div class="patient-name">
+              {{ cita.usuario.nombre }} {{ cita.usuario.apellido }}
+            </div>
+            <div class="appointment-meta">
+              <span class="meta-date">
+                <ion-icon name="calendar-clear-outline"></ion-icon>
+                {{ cita.fecha | date:'dd MMM yyyy' }}
+              </span>
+              <span class="meta-time">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ cita.fecha | date:'hh:mm a' }}
+              </span>
+            </div>
+            <p class="appointment-reason">{{ cita.motivo }}</p>
+          </ion-label>
+
+          <div slot="end" class="type-badge" [ngClass]="{'type-video': cita.tipo === 'VIDEOLLAMADA', 'type-presencial': cita.tipo === 'PRESENCIAL'}">
+            <ion-icon *ngIf="cita.tipo === 'VIDEOLLAMADA'" name="videocam"></ion-icon>
+            {{ cita.tipo === 'VIDEOLLAMADA' ? 'Video' : 'Presencial' }}
+          </div>
+        </ion-item>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+</ion-content>

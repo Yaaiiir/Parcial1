@@ -1,0 +1,96 @@
+// Configuración del generador y la fuente de datos
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- MODELO DE USUARIO CENTRALIZADO ---
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  password     String
+  nombre       String
+  apellido     String
+  telefono     String?
+  rol          Rol      @default(PACIENTE)
+
+  // Campos específicos según rol
+  especialidad String?  // Solo médicos
+  cedula       String?  @unique // Solo médicos (identificación profesional)
+  activo       Boolean  @default(true) // Permite al Admin banear/suspender
+
+  createdAt    DateTime @default(now())
+  // Se pone opcional (?) para evitar errores en el push con datos existentes
+  updatedAt    DateTime? @updatedAt
+
+  // --- RELACIONES ---
+
+  // Relaciones como Paciente
+  consultas        Consulta[]     @relation("PacienteConsultas")
+  recetas          Receta[]       @relation("PacienteRecetas")
+
+  // Relaciones como Médico
+  agendaDoctor     Consulta[]     @relation("MedicoConsultas")
+  metasAnalisis    AnalisisMeta[] @relation("MedicoMetas")
+}
+
+enum Rol {
+  PACIENTE
+  MEDICO
+  ADMIN
+}
+
+// --- GESTIÓN DE CITAS ---
+model Consulta {
+  id             Int          @id @default(autoincrement())
+  fecha          DateTime
+  motivo         String
+  tipo           TipoConsulta @default(PRESENCIAL)
+  resumenClinico String?      @db.Text
+  estatus        String       @default("PENDIENTE") // PENDIENTE, COMPLETADA, CANCELADA
+
+  // Relación con el Paciente
+  usuarioId      Int
+  usuario        Usuario      @relation("PacienteConsultas", fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  // Relación con el Médico
+  medicoId       Int
+  medico         Usuario      @relation("MedicoConsultas", fields: [medicoId], references: [id], onDelete: Cascade)
+}
+
+enum TipoConsulta {
+  VIDEOLLAMADA
+  PRESENCIAL
+}
+
+// --- GESTIÓN DE RECETAS ---
+model Receta {
+  id            Int      @id @default(autoincrement())
+  medicamento   String
+  indicaciones  String
+  doctorNombre  String
+  fechaEmision  DateTime @default(now())
+  estatus       String   @default("ACTIVA")
+  archivoPdf    String?
+
+  // Relación con el Paciente
+  usuarioId     Int
+  usuario       Usuario  @relation("PacienteRecetas", fields: [usuarioId], references: [id], onDelete: Cascade)
+}
+
+// --- MÓDULO DE ANÁLISIS/METAS (Para Médicos) ---
+model AnalisisMeta {
+  id          Int      @id @default(autoincrement())
+  titulo      String
+  descripcion String?
+  completada  Boolean  @default(false)
+  fecha       DateTime @default(now())
+
+  // Relación con el Médico
+  medicoId    Int
+  medico      Usuario  @relation("MedicoMetas", fields: [medicoId], references: [id], onDelete: Cascade)
+}

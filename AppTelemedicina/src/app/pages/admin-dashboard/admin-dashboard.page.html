@@ -1,0 +1,143 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title>Panel de Administración</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="power-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar color="primary">
+    <ion-searchbar
+      placeholder="Buscar por nombre o correo..."
+      (ionInput)="buscarUsuario($event)"
+      class="custom-search"
+      mode="ios">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="cargarUsuarios($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="crescent"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="stats-container">
+    <p>Registrados: <b>{{ usuariosFiltrados.length }}</b></p>
+  </div>
+
+  <ion-list lines="none" style="background: transparent;" class="ion-padding-horizontal">
+    @for (user of usuariosFiltrados; track user.id) {
+      <ion-item class="user-card" lines="none">
+        <ion-avatar slot="start">
+          <div class="avatar-text" [ngClass]="user.rol?.toLowerCase()">
+            {{ user.nombre?.charAt(0) }}
+          </div>
+        </ion-avatar>
+
+        <ion-label>
+          <h2>{{ user.nombre }} {{ user.apellido }}</h2>
+          <p>{{ user.email }}</p>
+          <ion-badge [color]="user.rol === 'MEDICO' ? 'secondary' : (user.rol === 'ADMIN' ? 'danger' : 'tertiary')">
+            {{ user.rol }}
+          </ion-badge>
+        </ion-label>
+
+        <ion-buttons slot="end">
+          <ion-button color="primary" (click)="abrirModalEditar(user)" fill="clear">
+            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button color="danger" (click)="confirmarEliminar(user)" fill="clear">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    } @empty {
+      <div class="empty-state ion-text-center ion-padding">
+        <ion-icon name="finger-print-outline"></ion-icon>
+        <p>No se encontraron usuarios</p>
+      </div>
+    }
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="abrirModalNuevo()">
+      <ion-icon name="person-add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="setOpen(false)" id="add-user-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>{{ isEditing ? 'Editar Usuario' : 'Nuevo Usuario' }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setOpen(false)" color="medium">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" style="--background: #ffffff;">
+        <div class="form-container">
+
+          <ion-item lines="none" class="ion-margin-bottom">
+            <ion-icon name="person-outline" slot="start" color="primary"></ion-icon>
+            <ion-label position="floating">Nombre(s)</ion-label>
+            <ion-input [(ngModel)]="nuevoUsuario.nombre" type="text" placeholder="Ej. Juan"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="ion-margin-bottom">
+            <ion-icon name="person-outline" slot="start" color="primary" style="opacity: 0;"></ion-icon>
+            <ion-label position="floating">Apellido(s)</ion-label>
+            <ion-input [(ngModel)]="nuevoUsuario.apellido" type="text" placeholder="Ej. Pérez"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="ion-margin-bottom">
+            <ion-icon name="mail-outline" slot="start" color="primary"></ion-icon>
+            <ion-label position="floating">Correo Electrónico</ion-label>
+            <ion-input [(ngModel)]="nuevoUsuario.email" type="email" placeholder="usuario@ejemplo.com"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="ion-margin-bottom">
+            <ion-icon name="finger-print-outline" slot="start" color="primary"></ion-icon>
+            <ion-label position="floating">Contraseña {{ isEditing ? '(Opcional)' : '' }}</ion-label>
+            <ion-input [(ngModel)]="nuevoUsuario.password" type="password" placeholder="••••••••"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="ion-margin-bottom">
+            <ion-icon name="shield-checkmark-outline" slot="start" color="primary"></ion-icon>
+            <ion-label position="floating">Rol de Usuario</ion-label>
+            <ion-select [(ngModel)]="nuevoUsuario.rol" interface="action-sheet" placeholder="Selecciona un rol">
+              <ion-select-option value="PACIENTE">Paciente</ion-select-option>
+              <ion-select-option value="MEDICO">Médico</ion-select-option>
+              <ion-select-option value="ADMIN">Administrador</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          @if (nuevoUsuario.rol === 'MEDICO') {
+            <div class="ion-padding-top animate__animated animate__fadeIn">
+              <ion-item lines="none" class="ion-margin-bottom">
+                <ion-icon name="medical-outline" slot="start" color="secondary"></ion-icon>
+                <ion-label position="floating">Especialidad</ion-label>
+                <ion-input [(ngModel)]="nuevoUsuario.especialidad" type="text"></ion-input>
+              </ion-item>
+
+              <ion-item lines="none" class="ion-margin-bottom">
+                <ion-icon name="card-outline" slot="start" color="secondary"></ion-icon>
+                <ion-label position="floating">Cédula Profesional</ion-label>
+                <ion-input [(ngModel)]="nuevoUsuario.cedula" type="text"></ion-input>
+              </ion-item>
+            </div>
+          }
+
+          <ion-button expand="block" (click)="guardarUsuario()" class="ion-margin-top" shape="round">
+            <ion-icon [name]="isEditing ? 'save-outline' : 'shield-checkmark-outline'" slot="start"></ion-icon>
+            {{ isEditing ? 'ACTUALIZAR CAMBIOS' : 'GUARDAR USUARIO' }}
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

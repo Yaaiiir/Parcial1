@@ -1,0 +1,152 @@
+ion-content {
+  --background: #f8fbff;
+}
+
+.main-title {
+  font-weight: bold;
+  font-size: 1.8rem;
+  color: #1a6dff;
+  margin: 25px 0 20px 16px;
+}
+
+// Limpieza de bordes en la lista e items
+ion-list {
+  background: transparent !important;
+  padding: 0;
+}
+
+.appointment-item {
+  --background: transparent;
+  --border-style: none; // ELIMINA EL BORDE DEL ITEM
+  --inner-border-width: 0; // ELIMINA EL BORDE INTERNO
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin-bottom: 10px;
+
+  &::part(native) {
+    border: none !important; // FUERZA ELIMINACIÓN EN SHADOW DOM
+  }
+}
+
+// 1. Diseño de la Tarjeta (Sin bordes, solo sombra)
+.appointment-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: none !important; // ELIMINA EL BORDE DE LA TARJETA
+  margin: 0;
+
+  // Evitar que el contenido de la tarjeta genere bordes
+  ion-card-content {
+    border: none !important;
+  }
+}
+
+// 2. Header de la Tarjeta
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+
+  .patient-avatar {
+    width: 42px;
+    height: 42px;
+    .avatar-placeholder {
+      background: #e3f2fd;
+      color: #1a6dff;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-radius: 12px;
+    }
+  }
+
+  .patient-info {
+    flex: 1;
+    .patient-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #111e35;
+      margin: 0;
+    }
+    .appointment-time {
+      font-size: 0.85rem;
+      color: #757575;
+      margin: 2px 0 0 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      ion-icon { color: #1a6dff; }
+    }
+  }
+
+  .type-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-transform: uppercase;
+
+    &.type-presencial { background: #e8f5e9; color: #2e7d32; }
+    &.type-video { background: #e3f2fd; color: #1565c0; }
+  }
+}
+
+// 3. Detalles del Motivo
+.card-details {
+  padding: 0 16px;
+
+  .motivo-box {
+    background: #f9fafc;
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    border: none; // Aseguramos que no haya borde aquí
+
+    .label {
+      font-size: 0.7rem;
+      color: #9e9e9e;
+      text-transform: uppercase;
+      font-weight: 800;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .motivo-text {
+      margin: 0;
+      color: #444;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+// 4. Footer y Botones
+.card-footer {
+  padding: 4px 16px 16px 16px;
+
+  .btn-atender {
+    --border-radius: 14px;
+    --box-shadow: none;
+    font-weight: 700;
+    height: 48px;
+    margin: 0;
+    font-size: 0.95rem;
+
+    // Colores basados en tus capturas
+    &[color="primary"] { --background: #448aff; } // Azul intenso
+    &[color="secondary"] { --background: #4fc3f7; } // Azul claro
+  }
+}
+
+.empty-agenda {
+  padding: 60px 20px;
+  ion-icon { font-size: 50px; color: #ccc; }
+  p { color: #999; margin-top: 10px; }
+}

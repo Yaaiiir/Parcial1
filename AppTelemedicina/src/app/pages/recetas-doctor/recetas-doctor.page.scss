@@ -1,0 +1,162 @@
+ion-content {
+  --background: #fcfdfe;
+}
+
+// Header Pro
+.header-container {
+  background: linear-gradient(135deg, #1a6dff 0%, #1559d4 100%);
+  border-radius: 0 0 35px 35px;
+  padding-bottom: 45px;
+  margin-bottom: -25px;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+
+    h1 { color: white; font-weight: 800; font-size: 1.8rem; margin: 0; }
+    p { color: #bbd6ff; margin: 4px 0 0; font-size: 0.9rem; }
+  }
+}
+
+.add-button-circle {
+  background: #ffffff;
+  width: 50px;
+  height: 50px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a6dff;
+  font-size: 28px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  &:active { transform: scale(0.95); }
+}
+
+.main-container {
+  padding: 0 16px;
+  position: relative;
+  z-index: 5;
+}
+
+.section-title h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a2e50;
+  margin-bottom: 15px;
+}
+
+// Prescription Card Style
+.prescription-card {
+  background: #fff;
+  border-radius: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  border: none;
+  padding: 16px;
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .med-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      .icon-box {
+        background: #eef4ff;
+        color: #1a6dff;
+        padding: 10px;
+        border-radius: 14px;
+        font-size: 1.2rem;
+      }
+      h3 { margin: 0; font-weight: 700; color: #111e35; font-size: 1rem; }
+      p { margin: 2px 0 0; font-size: 0.85rem; color: #78859a; display: flex; align-items: center; gap: 4px; }
+    }
+  }
+
+  .card-body {
+    background: #f9fafc;
+    border-radius: 16px;
+    padding: 12px;
+    .instruction-label { font-size: 0.65rem; font-weight: 800; color: #a1acc0; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .instruction-text { color: #4b5a76; font-size: 0.9rem; margin: 0; line-height: 1.4; }
+  }
+
+  .card-footer {
+    margin-top: 12px;
+    .date-tag {
+      background: #f0f2f5;
+      color: #6d7a91;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+  }
+}
+
+// Modal Styles
+// ... (tu código anterior se mantiene igual)
+
+// Modal Styles
+.modal-bg { --background: #f8fbff; }
+
+.form-wrapper {
+  .input-group {
+    margin-bottom: 18px;
+    label {
+      font-weight: 700;
+      color: #4b5a76;
+      font-size: 0.85rem;
+      margin-left: 4px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .custom-field {
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      border: 1px solid #edf2f7;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+
+      ion-icon {
+        color: #1a6dff;
+        font-size: 1.3rem;
+        margin-right: 10px;
+      }
+
+      // CORRECCIÓN AQUÍ: Definición de colores para los inputs
+      ion-select, ion-input, ion-textarea {
+        --padding-start: 0;
+        font-size: 0.95rem;
+        width: 100%;
+        --color: #1e293b; /* Color del texto que escribe el usuario (Gris muy oscuro) */
+        --placeholder-color: #94a3b8; /* Color del texto de sugerencia */
+        color: #1e293b; /* Fallback para navegadores estándar */
+      }
+
+      &.textarea-field {
+        align-items: flex-start;
+        padding-top: 12px;
+      }
+    }
+  }
+}
+
+.btn-confirm {
+  --border-radius: 16px;
+  height: 54px;
+  font-weight: 700;
+  margin-top: 25px;
+  --box-shadow: 0 8px 20px rgba(26, 109, 255, 0.25);
+}

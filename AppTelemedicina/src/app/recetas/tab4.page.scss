@@ -1,0 +1,129 @@
+ion-content {
+  // Unificamos el fondo con el login y perfil
+  --background: #ffffff linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+}
+
+// Eliminamos el fondo negro del ion-list
+ion-list {
+  background: transparent !important;
+  --background: transparent;
+}
+
+.container {
+  padding: 10px 20px 40px;
+}
+
+.section-info {
+  margin: 10px 0 25px;
+  p {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+.recipe-card {
+  background: white;
+  border-radius: 28px;
+  padding: 22px;
+  margin-bottom: 20px;
+  // Sombra más suave y moderna
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .card-body {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+
+    .icon-doc {
+      background: #f0f7ff;
+      color: var(--ion-color-primary);
+      padding: 14px;
+      border-radius: 20px;
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .recipe-details {
+      flex: 1;
+
+      ion-badge {
+        font-size: 0.6rem;
+        font-weight: 800;
+        padding: 5px 10px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+
+        &[color="success"] { background: #e6f9ed; color: #1fb458; }
+        &[color="medium"] { background: #f4f4f4; color: #7f8c8d; }
+      }
+
+      h3 {
+        margin: 6px 0 2px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+      }
+
+      p {
+        margin: 0;
+        color: #5d6d7e;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .date-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+        color: #abb2b9;
+        font-size: 0.8rem;
+        font-weight: 700;
+
+        ion-icon { font-size: 14px; }
+      }
+    }
+  }
+
+  .card-footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f2f4f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .btn-download {
+      --color: var(--ion-color-primary);
+      font-weight: 800;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+      --padding-start: 0;
+
+      ion-icon { margin-right: 6px; font-size: 18px; }
+    }
+
+    .btn-details {
+      --color: #95a5a6;
+      font-weight: 700;
+      font-size: 0.8rem;
+      margin: 0;
+      --padding-end: 0;
+    }
+  }
+}

@@ -1,0 +1,173 @@
+// Contenedor principal
+ion-content {
+  --background: #f8f9fa;
+}
+
+.stats-container {
+  padding: 20px 20px 8px;
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    b { color: var(--ion-color-primary); }
+  }
+}
+
+// Estilo de la Tarjeta de Usuario
+.user-card {
+  --border-color: transparent !important;
+  --inner-border-width: 0px !important;
+  --border-width: 0px !important;
+  --border-style: none !important;
+  --background: #ffffff;
+
+  margin-bottom: 12px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+  &::part(native) {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  &::part(inner) {
+    border: none !important;
+    --inner-padding-end: 12px;
+  }
+
+  h2 {
+    color: #2c3e50 !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem;
+    margin-bottom: 2px;
+  }
+
+  p {
+    color: #7f8c8d !important;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+  }
+}
+
+// Avatares
+.avatar-text {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 50%;
+  text-transform: uppercase;
+
+  &.medico { background: linear-gradient(135deg, #42d3f2, #2dd36f); }
+  &.paciente { background: linear-gradient(135deg, #707eff, #9d52ff); }
+  &.admin { background: linear-gradient(135deg, #ff4961, #ff7e5f); }
+}
+
+// Badges
+ion-badge {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.65rem;
+}
+
+// Buscador
+.custom-search {
+  --background: rgba(255, 255, 255, 0.2);
+  --color: #ffffff;
+  --placeholder-color: rgba(255, 255, 255, 0.7);
+  --icon-color: #ffffff;
+  --border-radius: 12px;
+  padding: 0 16px 16px;
+}
+
+// Botón Eliminar
+ion-button[color="danger"] {
+  --color: #eb445a;
+}
+
+// --- ESTILOS DEL MODAL (NUEVO USUARIO) ---
+
+#add-user-modal {
+  --height: 90%;
+  --border-radius: 20px 20px 0 0;
+
+  ion-toolbar {
+    --background: #ffffff;
+    --color: #2c3e50;
+    font-weight: 700;
+  }
+}
+
+.form-container {
+  padding: 10px 5px;
+
+  ion-item {
+    --background: #f8f9fa;
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --highlight-height: 0;
+    margin-bottom: 15px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+
+    &.item-has-focus {
+      border-color: var(--ion-color-primary);
+      box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.1);
+    }
+
+    ion-label {
+      color: #6c757d !important;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    ion-input {
+      --color: #2c3e50;
+      font-weight: 500;
+    }
+
+    // CORRECCIÓN DEL COLOR DEL TEXTO EN EL SELECT
+    ion-select {
+      --placeholder-color: #2c3e50;
+      --placeholder-opacity: 1;
+      color: #2c3e50 !important; // Fuerza el color del texto seleccionado
+      font-weight: 500;
+
+      &::part(text) {
+        color: #2c3e50;
+      }
+
+      &::part(icon) {
+        color: #6c757d; // Color de la flecha
+        opacity: 1;
+      }
+    }
+  }
+
+  // Botón de Guardar
+  ion-button {
+    --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3);
+    margin-top: 25px;
+    height: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+}
+
+.form-item-white {
+  --background: #ffffff !important;
+  border: 1px solid #dee2e6 !important;
+}

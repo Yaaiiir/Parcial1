@@ -1,0 +1,50 @@
+<ion-content class="ion-padding-horizontal">
+  <h1 class="main-title">Próximas Consultas</h1>
+
+  <ion-list lines="none">
+    <div *ngIf="citasPendientes.length === 0" class="empty-agenda ion-text-center ion-padding">
+      <ion-icon name="calendar-outline" color="medium"></ion-icon>
+      <p>No tienes citas programadas para hoy.</p>
+    </div>
+
+    <ion-item-sliding *ngFor="let cita of citasPendientes">
+      <ion-item class="appointment-item ion-no-padding">
+        <ion-card mode="ios" class="appointment-card ion-no-margin">
+
+          <div class="card-header">
+            <ion-avatar class="patient-avatar">
+              <div class="avatar-placeholder">{{ cita.usuario.nombre[0] }}</div>
+            </ion-avatar>
+
+            <div class="patient-info">
+              <h2 class="patient-name">{{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</h2>
+              <p class="appointment-time">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ cita.fecha | date:'hh:mm a' }}
+              </p>
+            </div>
+
+            <div class="type-badge" [ngClass]="{'type-video': cita.tipo === 'VIDEOLLAMADA', 'type-presencial': cita.tipo === 'PRESENCIAL'}">
+              <ion-icon *ngIf="cita.tipo === 'VIDEOLLAMADA'" name="videocam"></ion-icon>
+              {{ cita.tipo === 'VIDEOLLAMADA' ? 'Video' : 'Sede' }}
+            </div>
+          </div>
+
+          <ion-card-content class="card-details ion-no-padding">
+            <div class="motivo-box">
+              <span class="label">Motivo de consulta:</span>
+              <p class="motivo-text">{{ cita.motivo }}</p>
+            </div>
+          </ion-card-content> <div class="card-footer ion-no-padding">
+            <ion-button mode="ios" expand="block" (click)="atenderCita(cita)"
+              [color]="cita.tipo === 'VIDEOLLAMADA' ? 'secondary' : 'primary'" class="btn-atender">
+              <ion-icon slot="start" [name]="cita.tipo === 'VIDEOLLAMADA' ? 'call-outline' : 'checkmark-circle-outline'"></ion-icon>
+              {{ cita.tipo === 'VIDEOLLAMADA' ? 'Iniciar Videollamada' : 'Finalizar Consulta' }}
+            </ion-button>
+          </div>
+
+        </ion-card>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,84 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Mis Recetas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      refreshingSpinner="crescent">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="container">
+    <div class="section-info">
+      <p>Gestiona tus prescripciones médicas y descárgalas para presentarlas en farmacia.</p>
+    </div>
+
+    <div class="ion-text-center ion-padding" *ngIf="!isLoading && recetas.length === 0">
+      <div class="empty-state">
+        <ion-icon name="receipt-outline" style="font-size: 64px; color: #ccc;"></ion-icon>
+        <p style="color: #666;">No tienes recetas registradas aún.</p>
+      </div>
+    </div>
+
+    <ion-list *ngIf="isLoading" style="background: transparent;">
+      <div class="recipe-card" *ngFor="let i of [1,2,3]" style="margin-bottom: 15px; border-radius: 15px; overflow: hidden;">
+        <ion-skeleton-text animated style="width: 100%; height: 160px; margin: 0;"></ion-skeleton-text>
+      </div>
+    </ion-list>
+
+    <ion-list *ngIf="!isLoading" style="background: transparent;">
+      <div class="recipe-card" *ngFor="let receta of recetas">
+        <div class="card-body">
+          <div class="icon-doc">
+            <ion-icon name="medkit-outline"></ion-icon>
+          </div>
+
+          <div class="recipe-details">
+            <ion-badge
+              [color]="(receta.estado | lowercase) === 'activa' ? 'success' : 'medium'"
+              mode="ios">
+              {{ receta.estado }}
+            </ion-badge>
+
+            <h3>{{ receta.doctor }}</h3>
+            <p class="specialty">{{ receta.especialidad }}</p>
+
+            <div class="medication-box">
+              <p class="medication-text">
+                <strong>Medicamento:</strong> {{ receta.medicamento }}
+              </p>
+            </div>
+
+            <div class="date-info">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>{{ receta.fecha | date:'dd MMM yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <ion-button
+            fill="clear"
+            class="btn-download"
+            (click)="descargarReceta(receta)"
+            title="Descargar PDF">
+            <ion-icon slot="start" name="download-outline"></ion-icon>
+            PDF
+          </ion-button>
+
+          <ion-button
+            fill="clear"
+            class="btn-details"
+            (click)="verDetalles(receta)">
+            Ver Indicaciones
+            <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-list>
+  </div>
+</ion-content>

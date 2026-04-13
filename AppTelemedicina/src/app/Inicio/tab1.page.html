@@ -1,0 +1,195 @@
+<ion-content [fullscreen]="true">
+  <div class="header-blue">
+    <div class="welcome-section">
+      <h1>Hola, {{ userName || 'Paciente' }}! 👋</h1>
+      <p>¿Cómo te sientes hoy?</p>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <div class="quick-access-grid">
+      <div class="access-card shadow-card" id="open-modal-agendar">
+        <div class="icon-bg blue"><ion-icon name="calendar"></ion-icon></div>
+        <h3>Agendar</h3>
+      </div>
+
+      <div class="access-card shadow-card" routerLink="/tabs/tab2">
+        <div class="icon-bg green"><ion-icon name="people"></ion-icon></div>
+        <h3>Médicos</h3>
+      </div>
+
+      <div class="access-card shadow-card" id="open-modal-recetas">
+        <div class="icon-bg orange"><ion-icon name="receipt"></ion-icon></div>
+        <h3>Recetas</h3>
+      </div>
+    </div>
+
+    <section class="appointments-section">
+      <div class="section-header">
+        <h2>Próximas Citas</h2>
+      </div>
+
+      <div class="appointment-item shadow-card" *ngFor="let cita of consultas">
+        <div class="info">
+          <h3>Dr(a). {{ cita.medico?.nombre }} {{ cita.medico?.apellido }}</h3>
+          <p class="specialty">{{ cita.medico?.especialidad }}</p>
+          <div class="meta">
+            <span><ion-icon name="calendar-outline"></ion-icon> {{ cita.fecha | date:'dd MMM yyyy' }}</span>
+            <span><ion-icon name="time-outline"></ion-icon> {{ cita.fecha | date:'hh:mm a' }}</span>
+          </div>
+        </div>
+        <div class="type-tag" [ngClass]="cita.tipo === 'VIDEOLLAMADA' ? 'video' : 'presencial'">
+          <ion-icon [name]="cita.tipo === 'VIDEOLLAMADA' ? 'videocam' : 'business'"></ion-icon>
+          {{ cita.tipo === 'VIDEOLLAMADA' ? 'Video' : 'Presencial' }}
+        </div>
+      </div>
+
+      <div class="ion-text-center ion-padding" *ngIf="consultas.length === 0">
+        <p>No tienes citas programadas.</p>
+      </div>
+    </section>
+
+    <section class="health-tip">
+      <div class="tip-card">
+        <div class="tip-header">
+          <ion-icon name="water"></ion-icon>
+          <h3>Mantente Hidratado</h3>
+        </div>
+        <p>Recuerda beber al menos 8 vasos de agua al día para mantener tu cuerpo saludable.</p>
+      </div>
+    </section>
+  </div>
+
+  <ion-modal trigger="open-modal-agendar" #modalAgendar>
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="modalAgendar.dismiss()">
+              <ion-icon name="arrow-back-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>Agendar Cita</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding modal-agendar-content">
+        <ion-label class="form-label">Tipo de Consulta</ion-label>
+        <div class="type-selection">
+          <div class="type-option" [class.active]="tipoConsulta === 'VIDEOLLAMADA'" (click)="setTipoConsulta('VIDEOLLAMADA')">
+            <ion-icon name="videocam-outline"></ion-icon>
+            <p>Video Consulta</p>
+          </div>
+          <div class="type-option" [class.active]="tipoConsulta === 'PRESENCIAL'" (click)="setTipoConsulta('PRESENCIAL')">
+            <ion-icon name="business-outline"></ion-icon>
+            <p>Presencial</p>
+          </div>
+        </div>
+
+        <ion-label class="form-label">Seleccionar Médico</ion-label>
+        <div class="custom-input-box">
+          <ion-icon name="people-outline" slot="start" color="primary"></ion-icon>
+          <ion-select
+            placeholder="Elige un médico"
+            interface="popover"
+            [(ngModel)]="medicoSeleccionado"
+            (ionChange)="onMedicoChange($event)"
+            class="full-width-select">
+            <ion-select-option *ngFor="let medico of medicosBD" [value]="medico">
+              Dr(a). {{ medico.nombre }} {{ medico.apellido }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <ion-label class="form-label">Fecha de la Cita</ion-label>
+        <div class="custom-input-box">
+          <ion-icon name="calendar-outline" slot="start"></ion-icon>
+          <ion-datetime-button datetime="datetime"></ion-datetime-button>
+          <ion-popover [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="datetime" presentation="date" [(ngModel)]="fechaSeleccionada"></ion-datetime>
+            </ng-template>
+          </ion-popover>
+        </div>
+
+        <ion-label class="form-label">Hora Disponible</ion-label>
+        <div class="hours-grid">
+          <div *ngFor="let hora of horasDisponibles"
+               class="hour-item"
+               [class.active]="hora === horaSeleccionada"
+               (click)="setHora(hora)">
+            {{ hora }}
+          </div>
+        </div>
+
+        <ion-label class="form-label">Motivo de Consulta</ion-label>
+        <div class="custom-input-box no-icon">
+          <ion-textarea placeholder="Describe el motivo..." rows="4" [(ngModel)]="motivoConsulta"></ion-textarea>
+        </div>
+
+        <ion-button expand="block" class="confirm-btn" (click)="confirmarCita()">
+          Confirmar Cita
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal trigger="open-modal-recetas" #modalRecetas>
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="modalRecetas.dismiss()">
+              <ion-icon name="arrow-back-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>Mis Recetas</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" style="--background: #f8faff;">
+        <div class="section-info" style="margin-bottom: 20px;">
+          <p style="color: #666; font-size: 0.9rem;">Consulta y descarga tus prescripciones vigentes.</p>
+        </div>
+
+        <div class="recipe-card" *ngFor="let receta of recetas" style="background: white; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;">
+          <div style="padding: 16px; display: flex;">
+            <div style="background: #f0f7ff; color: #3880ff; padding: 12px; border-radius: 12px; margin-right: 15px; height: fit-content;">
+              <ion-icon name="medkit-outline" style="font-size: 24px;"></ion-icon>
+            </div>
+            <div style="flex: 1;">
+              <ion-badge [color]="(receta.estado | lowercase) === 'activa' ? 'success' : 'medium'" mode="ios" style="margin-bottom: 8px;">
+                {{ receta.estado }}
+              </ion-badge>
+              <h3 style="margin: 0; font-size: 1.1rem; color: #2c3e50;">{{ receta.doctor }}</h3>
+              <p style="margin: 4px 0; color: #7f8c8d; font-size: 0.85rem;">Medicina General</p>
+
+              <div style="background: #f9f9f9; padding: 8px; border-radius: 8px; margin: 10px 0;">
+                <p style="margin: 0; font-size: 0.9rem;"><strong>Prescripción:</strong> {{ receta.medicamento }}</p>
+              </div>
+
+              <div style="display: flex; align-items: center; color: #95a5a6; font-size: 0.8rem;">
+                <ion-icon name="time-outline" style="margin-right: 5px;"></ion-icon>
+                <span>{{ receta.fecha | date:'dd MMM yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; border-top: 1px solid #f2f2f2; padding: 5px;">
+            <ion-button fill="clear" style="flex: 1; --color: #3880ff;" (click)="descargarReceta(receta)">
+              <ion-icon slot="start" name="download-outline"></ion-icon> PDF
+            </ion-button>
+            <ion-button fill="clear" style="flex: 1; --color: #2c3e50;" (click)="verDetalles(receta)">
+              Detalles <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <div class="ion-text-center ion-padding" *ngIf="recetas.length === 0">
+          <p>No tienes recetas disponibles.</p>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

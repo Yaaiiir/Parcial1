@@ -1,0 +1,50 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Historial Médico</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="timeline-container">
+
+    <div class="header-text">
+      <p>Consulta el registro cronológico de tus atenciones médicas y seguimientos.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item" *ngFor="let consulta of consultas">
+
+        <div class="timeline-line">
+          <div class="dot" [class.video]="consulta.tipo === 'Videollamada'">
+            <ion-icon [name]="consulta.tipo === 'Videollamada' ? 'videocam-outline' : 'business-outline'"></ion-icon>
+          </div>
+          <div class="connector"></div>
+        </div>
+
+        <div class="timeline-card">
+          <div class="card-header">
+            <div class="date-box">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ consulta.fecha }}</span>
+            </div>
+            <ion-badge color="light" mode="ios">{{ consulta.tipo }}</ion-badge>
+          </div>
+
+          <h3>{{ consulta.doctor }}</h3>
+          <p class="spec">{{ consulta.especialidad }}</p>
+
+          <div class="reason-pill">
+            <p><strong>Motivo:</strong> {{ consulta.motivo }}</p>
+          </div>
+
+          <ion-button fill="clear" size="small" class="btn-resumen">
+            Ver Resumen Clínico
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</ion-content>

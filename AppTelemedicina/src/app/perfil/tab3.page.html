@@ -1,0 +1,87 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Mi Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="dark" (click)="irASeguridad()">
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="profile-container">
+
+    <section class="profile-header">
+      <div class="avatar-wrapper">
+        <div class="user-avatar-placeholder">
+          {{ userInicial }}
+        </div>
+        <div class="edit-badge"><ion-icon name="person-outline"></ion-icon></div>
+      </div>
+
+      <h1>{{ userNombre }} {{ userApellido }}</h1>
+      <p>{{ userEmail }}</p>
+
+      <div class="health-summary">
+        <div class="stat-item">
+          <ion-icon name="shield-checkmark-outline" color="primary"></ion-icon>
+          <span>Rol: {{ userRol }}</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <ion-icon name="location-outline" color="tertiary"></ion-icon>
+          <span>México</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu-section">
+      <div class="menu-group">
+        <ion-item button (click)="irAInformacionPersonal()" detail="false">
+          <div class="icon-box blue"><ion-icon name="person-outline"></ion-icon></div>
+          <ion-label>
+            <h2>Información Personal</h2>
+            <p>Gestiona tus datos de contacto</p>
+          </ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item button (click)="irASeguridad()" detail="false">
+          <div class="icon-box green"><ion-icon name="shield-checkmark-outline"></ion-icon></div>
+          <ion-label>
+            <h2>Seguridad y Privacidad</h2>
+            <p>Cambiar contraseña</p>
+          </ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item button (click)="irAMetodosPago()" detail="false">
+          <div class="icon-box orange"><ion-icon name="card-outline"></ion-icon></div>
+          <ion-label>
+            <h2>Métodos de Pago</h2>
+            <p>Configura tus tarjetas</p>
+          </ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        </ion-item>
+      </div>
+
+      <div class="menu-group">
+        <ion-item button (click)="irAAyuda()" detail="false">
+          <div class="icon-box purple"><ion-icon name="help-circle-outline"></ion-icon></div>
+          <ion-label>
+            <h2>Centro de Ayuda</h2>
+            <p>Soporte técnico</p>
+          </ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        </ion-item>
+      </div>
+
+      <ion-button expand="block" fill="clear" color="danger" class="logout-btn" (click)="logout()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        Cerrar Sesión
+      </ion-button>
+    </section>
+
+  </div>
+</ion-content>

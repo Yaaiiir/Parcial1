@@ -1,0 +1,208 @@
+ion-content {
+  --background: #f8fbff; // Fondo muy claro, no blanco puro
+}
+
+// 1. Header Azul Curvo
+.header-container {
+  background-color: #1a6dff; // El color azul de la imagen
+  border-radius: 0 0 45px 45px; // Curva pronunciada abajo
+  padding-bottom: 70px; // Espacio extra para que las tarjetas floten sobre él
+  margin-bottom: -40px; // Hace que las tarjetas "suban" sobre el azul
+
+  .welcome-section {
+    margin-top: -10px;
+    h1 {
+      font-weight: bold;
+      font-size: 1.8rem;
+      color: #ffffff;
+      margin-bottom: 5px;
+    }
+    p {
+      color: #d1e3ff; // Azul muy claro para el subtítulo
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// 2. Grid de Menú y Tarjetas Flotantes
+.main-container {
+  position: relative;
+  z-index: 10;
+  padding: 0 10px;
+}
+
+.menu-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.menu-card {
+  flex: 1; // Distribuye espacio equitativamente
+  text-align: center;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); // Sombra suave
+  margin: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.95); // Efecto click
+  }
+
+  ion-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 18px 5px !important; // Padding ajustado para textos cortos
+  }
+
+  // Círculo del Icono
+  .icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 18px;
+    margin-bottom: 12px;
+
+    ion-icon {
+      font-size: 26px;
+    }
+  }
+
+  // Texto de la tarjeta
+  ion-label {
+    font-weight: 600;
+    color: #111e35; // Color oscuro sutil
+    font-size: 0.95rem;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Colores específicos para los iconos de las tarjetas (como en la imagen)
+.card-pacientes .icon-wrapper { background-color: #1a6dff; }
+.card-recetas .icon-wrapper { background-color: #388e3c; } // Verde como 'Médicos'
+.card-analisis .icon-wrapper { background-color: #ff9800; } // Naranja como 'Recetas'
+
+// 3. Sección de Citas
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #111e35;
+    margin: 0;
+  }
+  ion-button {
+    font-size: 0.75rem;
+    letter-spacing: 0.8px;
+    font-weight: bold;
+    margin: 0;
+  }
+}
+
+.appointments-list {
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+.appointment-item {
+  --background: #ffffff;
+  margin-bottom: 15px;
+  border-radius: 20px;
+  padding: 15px 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); // Sombra muy sutil
+  --inner-padding-end: 0;
+
+  &::part(native) {
+    border-radius: 20px;
+  }
+
+  ion-label {
+    margin: 0;
+  }
+
+  .patient-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #111e35;
+    margin-bottom: 8px;
+  }
+
+  .appointment-meta {
+    display: flex;
+    gap: 15px;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    ion-icon {
+      font-size: 16px;
+      color: #a0a0a0;
+    }
+  }
+
+  .appointment-reason {
+    color: #495057;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+// 4. Badges de Tipo de Cita (Estilo pill como en la imagen)
+.type-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+
+  ion-icon {
+    font-size: 14px;
+  }
+
+  // Estilo Presencial (Verde suave como en la imagen)
+  &.type-presencial {
+    background-color: #e6f7ed;
+    color: #2e7d32;
+  }
+
+  // Estilo Video (Azul suave como en la imagen)
+  &.type-video {
+    background-color: #e3f2fd;
+    color: #1565c0;
+  }
+}
+
+// Estado de agenda vacía
+.empty-agenda {
+  padding: 40px 0;
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  p {
+    color: #6c757d;
+    font-size: 1rem;
+  }
+}
