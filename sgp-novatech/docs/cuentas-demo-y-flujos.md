@@ -71,7 +71,7 @@ Esta cuenta permite validar restricciones de acceso para usuarios desactivados.
 2. Confirma que entra al area administrativa.
 3. Cierra sesion e inicia como `gerente@novatech.mx`, `lider@novatech.mx` y `empleado1@novatech.mx`.
 4. Verifica que cada rol vea solo lo que le corresponde.
-5. Intenta acceder manualmente a una ruta restringida con `empleado1@novatech.mx` para validar el `403`.
+5. Continúa con el flujo normal del rol `empleado1@novatech.mx` para revisar permisos dentro de la app.
 
 ## 2. Gestion de usuarios
 

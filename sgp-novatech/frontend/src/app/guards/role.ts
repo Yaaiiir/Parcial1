@@ -13,10 +13,5 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
     return true
   }
 
-  return router.createUrlTree(['/forbidden'], {
-    queryParams: {
-      code: 403,
-      from: route.routeConfig?.path || ''
-    }
-  })
+  return router.createUrlTree([authService.getDefaultRoute()])
 }

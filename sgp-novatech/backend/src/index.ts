@@ -13,17 +13,43 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
 
-app.use(cors())
-app.use(cors({
-  origin: [
-    'https://parcial1-git-brenda-nashe0209s-projects.vercel.app',
-    'https://parcial1-flai2myu7-nashe0209s-projects.vercel.app',
-    'http://localhost:4200' // Para que te siga funcionando en tu compu
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+const envOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
+const allowedOrigins = new Set([
+  'http://localhost:4200',
+  'http://127.0.0.1:4200',
+  ...envOrigins
+])
+
+const allowedOriginPatterns = [
+  /^https:\/\/.*\.vercel\.app$/
+]
+
+const corsOptions = {
+  origin(origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) {
+    if (!origin) {
+      return callback(null, true)
+    }
+
+    const isExplicitlyAllowed = allowedOrigins.has(origin)
+    const matchesKnownPattern = allowedOriginPatterns.some((pattern) => pattern.test(origin))
+
+    if (isExplicitlyAllowed || matchesKnownPattern) {
+      return callback(null, true)
+    }
+
+    return callback(new Error(`Origen no permitido por CORS: ${origin}`))
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-}));
+}
+
+app.use(cors(corsOptions))
+app.options(/.*/, cors(corsOptions))
 app.use(express.json())
 
 // Rutas
