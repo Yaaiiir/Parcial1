@@ -14,6 +14,16 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 app.use(cors())
+app.use(cors({
+  origin: [
+    'https://parcial1-git-brenda-nashe0209s-projects.vercel.app',
+    'https://parcial1-flai2myu7-nashe0209s-projects.vercel.app',
+    'http://localhost:4200' // Para que te siga funcionando en tu compu
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(express.json())
 
 // Rutas
