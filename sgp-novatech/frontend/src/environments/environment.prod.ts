@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://sgp-novatech-backend.up.railway.app'
-}
+  apiUrl: 'https://parcial1-production.up.railway.app'
+};
